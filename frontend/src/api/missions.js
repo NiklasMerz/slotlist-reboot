@@ -72,10 +72,10 @@ export const v1 = {
     return axios.get(`/v1/missions/${missionSlug}/permissions?limit=${limit}&offset=${offset}`)
   },
   getMissions(limit = 10, offset = 0, includeEnded = false) {
-    return axios.get(`/v1/missions?limit=${limit}&offset=${offset}&includeEnded=${includeEnded}`)
+    return axios.get(`/v1/missions/?limit=${limit}&offset=${offset}&includeEnded=${includeEnded}`)
   },
   getMissionsForCalendar(startDate, endDate) {
-    return axios.get(`/v1/missions?startDate=${startDate}&endDate=${endDate}`)
+    return axios.get(`/v1/missions/?startDate=${startDate}&endDate=${endDate}`)
   },
   getMissionSlotlist(missionSlug) {
     return axios.get(`/v1/missions/${missionSlug}/slots`)

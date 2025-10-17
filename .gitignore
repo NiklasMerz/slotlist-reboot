@@ -81,3 +81,15 @@ rewrite/*.pyd
 rewrite/.Python
 rewrite/db.sqlite3
 rewrite/*.sqlite3
+
+# Python bytecode (backend)
+backend/__pycache__/
+backend/**/__pycache__/
+backend/*.pyc
+backend/*.pyo
+backend/*.pyd
+__pycache__/
+**/__pycache__/
+*.pyc
+*.pyo
+*.pyd

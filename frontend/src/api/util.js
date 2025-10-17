@@ -48,9 +48,12 @@ axios.interceptors.response.use((response) => {
 
   return response
 }, (error) => {
-  if (error.response && error.response.status === 401) {
-    store.dispatch('performLogout')
+  pendingRequests -= 1
 
+  // Only handle 401s for authenticated requests, not public API calls
+  if (error.response && error.response.status === 401 && store.getters.loggedIn) {
+    console.info('401 error for authenticated user, logging out')
+    store.dispatch('performLogout')
     router.push({ name: 'login' })
   }
 

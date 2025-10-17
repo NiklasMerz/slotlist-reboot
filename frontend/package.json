@@ -5,6 +5,7 @@
   "scripts": {
     "build": "webpack --config build/webpack.prod.js",
     "dev": "cross-env node build/server.js",
+    "dev:local": "cross-env node build/server.local.js",
     "lint": "xo **/src/**/*.{vue,js} !node_modules/**"
   },
   "license": "MIT",

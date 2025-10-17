@@ -2111,19 +2111,15 @@ const actions = {
           throw 'Retrieving missions for calendar failed'
         }
 
-        if (_.isEmpty(response.data)) {
+        // API returns missions array directly, not wrapped in an object
+        if (!_.isArray(response.data)) {
           console.error(response)
-          throw 'Received empty response'
-        }
-
-        if (_.isNil(response.data.missions) || !_.isArray(response.data.missions)) {
-          console.error(response)
-          throw 'Received invalid missions'
+          throw 'Received invalid missions array'
         }
 
         commit({
           type: 'setMissionsForCalendar',
-          missions: response.data.missions
+          missions: response.data
         })
 
         commit({
@@ -2144,6 +2140,12 @@ const actions = {
         commit({
           type: 'refreshingMissionsForCalendar',
           refreshing: false
+        })
+
+        // Set empty array to prevent infinite loops
+        commit({
+          type: 'setMissionsForCalendar',
+          missions: []
         })
 
         if (error.response) {

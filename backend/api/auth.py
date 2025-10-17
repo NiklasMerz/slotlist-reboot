@@ -1,6 +1,7 @@
 import jwt
 from datetime import datetime, timedelta
 from django.conf import settings
+from django.contrib.auth.models import User as DjangoUser
 from typing import Optional, Dict, Any
 from api.models import User, Permission
 
@@ -32,6 +33,28 @@ def generate_jwt(user: User) -> str:
     
     token = jwt.encode(payload, settings.JWT_SECRET, algorithm=settings.JWT_ALGORITHM)
     return token
+
+
+def get_or_create_user_from_django_user(django_user: DjangoUser) -> User:
+    """Get or create a User record from a Django User"""
+    # Generate a fake Steam ID based on the Django user ID
+    fake_steam_id = f"django_{django_user.id:010d}"
+    
+    user, created = User.objects.get_or_create(
+        steam_id=fake_steam_id,
+        defaults={
+            'nickname': django_user.username,
+            'active': django_user.is_active
+        }
+    )
+    
+    # Update nickname if it changed
+    if not created and user.nickname != django_user.username:
+        user.nickname = django_user.username
+        user.active = django_user.is_active
+        user.save()
+    
+    return user
 
 
 def decode_jwt(token: str) -> Optional[Dict[str, Any]]:

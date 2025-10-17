@@ -138,6 +138,39 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 CORS_ALLOW_ALL_ORIGINS = os.getenv('CORS_ALLOW_ALL_ORIGINS', 'True') == 'True'
 CORS_ALLOW_CREDENTIALS = True
 
+# Always allow localhost and Docker service names for development
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",
+    "http://localhost:4000", 
+    "http://127.0.0.1:3000",
+    "http://127.0.0.1:4000",
+    "http://frontend-dev:3000",
+    "http://frontend:4000",
+    "http://backend:8000",
+]
+
+# Also allow localhost and Docker network patterns for any port
+CORS_ALLOWED_ORIGIN_REGEXES = [
+    r"^http://localhost:\d+$",
+    r"^http://127\.0\.0\.1:\d+$",
+    r"^http://frontend-dev:\d+$",
+    r"^http://frontend:\d+$",
+    r"^http://backend:\d+$",
+]
+
+# Allow specific headers
+CORS_ALLOW_HEADERS = [
+    'accept',
+    'accept-encoding',
+    'authorization',
+    'content-type',
+    'dnt',
+    'origin',
+    'user-agent',
+    'x-csrftoken',
+    'x-requested-with',
+]
+
 # JWT Settings
 JWT_SECRET = os.getenv('CONFIG_JWT_SECRET', 'change-me-in-production')
 JWT_ALGORITHM = 'HS256'

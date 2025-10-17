@@ -2,11 +2,10 @@ import uuid
 from django.db import models
 
 
-# Note: All models have `managed = False` in their Meta class.
-# This means Django will NOT create, modify, or delete these database tables.
-# The models are designed to work with the existing database schema from the
-# original TypeScript/Sequelize backend. This allows for seamless migration
-# and the ability to run both backends against the same database.
+# Note: All models have `managed = True` in their Meta class.
+# This means Django WILL create, modify, or delete these database tables through migrations.
+# The models are designed to work with the same database schema as the
+# original TypeScript/Sequelize backend using db_column mappings for compatibility.
 
 
 class Community(models.Model):
@@ -26,7 +25,7 @@ class Community(models.Model):
     class Meta:
         db_table = 'communities'
         verbose_name_plural = 'communities'
-        managed = False
+        managed = True
 
     def __str__(self):
         return f"{self.name} [{self.tag}]"
@@ -51,7 +50,7 @@ class User(models.Model):
 
     class Meta:
         db_table = 'users'
-        managed = False
+        managed = True
 
     def __str__(self):
         return f"{self.nickname} ({self.steam_id})"
@@ -68,7 +67,7 @@ class Permission(models.Model):
     class Meta:
         db_table = 'permissions'
         unique_together = [['user', 'permission']]
-        managed = False
+        managed = True
 
     def __str__(self):
         return f"{self.user.nickname}: {self.permission}"
@@ -159,7 +158,7 @@ class Mission(models.Model):
 
     class Meta:
         db_table = 'missions'
-        managed = False
+        managed = True
 
     def __str__(self):
         return self.title
@@ -178,7 +177,7 @@ class MissionSlotGroup(models.Model):
     class Meta:
         db_table = 'missionSlotGroups'
         ordering = ['order_number', 'title']
-        managed = False
+        managed = True
 
     def __str__(self):
         return f"{self.mission.title}: {self.title}"
@@ -219,7 +218,7 @@ class MissionSlot(models.Model):
     class Meta:
         db_table = 'missionSlots'
         ordering = ['order_number', 'title']
-        managed = False
+        managed = True
 
     def __str__(self):
         return f"{self.slot_group.title}: {self.title}"
@@ -237,7 +236,7 @@ class MissionSlotRegistration(models.Model):
     class Meta:
         db_table = 'missionSlotRegistrations'
         unique_together = [['user', 'slot']]
-        managed = False
+        managed = True
 
     def __str__(self):
         return f"{self.user.nickname} -> {self.slot.title}"
@@ -262,7 +261,7 @@ class MissionSlotTemplate(models.Model):
 
     class Meta:
         db_table = 'missionSlotTemplates'
-        managed = False
+        managed = True
 
     def __str__(self):
         return self.title
@@ -293,7 +292,7 @@ class MissionAccess(models.Model):
 
     class Meta:
         db_table = 'missionAccesses'
-        managed = False
+        managed = True
 
     def __str__(self):
         target = self.user.nickname if self.user else self.community.name if self.community else 'Unknown'
@@ -319,7 +318,7 @@ class CommunityApplication(models.Model):
     class Meta:
         db_table = 'communityApplications'
         unique_together = [['user', 'community']]
-        managed = False
+        managed = True
 
     def __str__(self):
         return f"{self.user.nickname} -> {self.community.name} ({self.status})"
@@ -340,7 +339,7 @@ class Notification(models.Model):
     class Meta:
         db_table = 'notifications'
         ordering = ['-created_at']
-        managed = False
+        managed = True
 
     def __str__(self):
         return f"{self.user.nickname}: {self.notification_type}"

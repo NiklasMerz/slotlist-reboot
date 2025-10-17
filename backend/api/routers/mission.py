@@ -11,12 +11,18 @@ from api.auth import has_permission
 router = Router()
 
 
-@router.get('/', response=List[MissionSchema], auth=None)
-def list_missions(request, limit: int = 25, offset: int = 0, include_ended: bool = False):
+@router.get('/', auth=None)
+def list_missions(request, limit: int = 25, offset: int = 0, include_ended: bool = False, startDate: int = None, endDate: int = None):
     """List all missions with pagination"""
     query = Mission.objects.select_related('creator', 'community').all()
     
-    if not include_ended:
+    # Date range filtering for calendar
+    if startDate and endDate:
+        from datetime import datetime as dt, timezone
+        start_dt = dt.fromtimestamp(startDate / 1000, tz=timezone.utc)
+        end_dt = dt.fromtimestamp(endDate / 1000, tz=timezone.utc)
+        query = query.filter(start_time__gte=start_dt, start_time__lte=end_dt)
+    elif not include_ended:
         query = query.filter(end_time__gte=datetime.utcnow()) | query.filter(end_time__isnull=True)
     
     missions = query[offset:offset + limit]
@@ -24,42 +30,31 @@ def list_missions(request, limit: int = 25, offset: int = 0, include_ended: bool
     result = []
     for mission in missions:
         result.append({
-            'uid': mission.uid,
+            'uid': str(mission.uid),
             'slug': mission.slug,
             'title': mission.title,
             'description': mission.description,
-            'briefing_time': mission.briefing_time,
-            'slot_list_time': mission.slot_list_time,
-            'start_time': mission.start_time,
-            'end_time': mission.end_time,
+            'briefing_time': mission.briefing_time.isoformat() if mission.briefing_time else None,
+            'slotting_time': mission.slotting_time.isoformat() if mission.slotting_time else None,
+            'start_time': mission.start_time.isoformat() if mission.start_time else None,
+            'end_time': mission.end_time.isoformat() if mission.end_time else None,
             'visibility': mission.visibility,
-            'tech_teleport': mission.tech_teleport,
-            'tech_respawn': mission.tech_respawn,
             'details_map': mission.details_map,
             'details_game_mode': mission.details_game_mode,
-            'details_required_dlcs': mission.details_required_dlcs,
-            'game_server': mission.game_server,
-            'voice_comms': mission.voice_comms,
-            'repositories': mission.repositories,
-            'rules_of_engagement': mission.rules_of_engagement,
-            'image_url': mission.image_url,
+            'required_dlcs': mission.required_dlcs,
+            'banner_image_url': mission.banner_image_url,
             'creator': {
-                'uid': mission.creator.uid,
+                'uid': str(mission.creator.uid),
                 'nickname': mission.creator.nickname,
-                'steam_id': None,
-                'community': None,
-                'active': None
+                'steam_id': mission.creator.steam_id,
             },
             'community': {
-                'uid': mission.community.uid,
+                'uid': str(mission.community.uid),
                 'name': mission.community.name,
                 'tag': mission.community.tag,
                 'slug': mission.community.slug,
                 'website': mission.community.website,
-                'image_url': mission.community.image_url,
-                'game_servers': mission.community.game_servers,
-                'voice_comms': mission.community.voice_comms,
-                'repositories': mission.community.repositories
+                'logo_url': mission.community.logo_url,
             } if mission.community else None
         })
     

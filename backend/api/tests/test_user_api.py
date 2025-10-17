@@ -1,0 +1,271 @@
+"""
+API Compatibility Tests for User Endpoints
+
+Tests that verify the Django Ninja API behaves exactly like the legacy TypeScript/Hapi.js API
+for all user-related endpoints.
+"""
+
+from django.test import TestCase, Client
+from api.models import User, Permission, Community
+import json
+import jwt
+import time
+from django.conf import settings
+
+
+class UserAPICompatibilityTests(TestCase):
+    """Test user endpoints for compatibility with legacy API"""
+    
+    def setUp(self):
+        """Set up test data"""
+        self.client = Client()
+        
+        # Create test users
+        self.test_user1 = User.objects.create(
+            uid='test-user-uid-1',
+            steamId='76561198012345678',
+            nickname='TestUser1',
+            active=True
+        )
+        
+        self.test_user2 = User.objects.create(
+            uid='test-user-uid-2',
+            steamId='76561198087654321',
+            nickname='TestUser2',
+            active=True
+        )
+        
+        self.admin_user = User.objects.create(
+            uid='admin-user-uid',
+            steamId='76561198011111111',
+            nickname='AdminUser',
+            active=True
+        )
+        
+        # Create admin permission
+        Permission.objects.create(
+            uid='admin-permission-uid',
+            permission='admin.user',
+            user=self.admin_user
+        )
+        
+        # Create JWT tokens
+        self.test_token = self._create_token(self.test_user1, [])
+        self.admin_token = self._create_token(self.admin_user, ['admin.user'])
+    
+    def _create_token(self, user, permissions):
+        """Helper to create JWT token"""
+        return jwt.encode(
+            {
+                'uid': user.uid,
+                'nickname': user.nickname,
+                'steamId': user.steamId,
+                'permissions': permissions,
+                'iat': int(time.time()),
+                'exp': int(time.time()) + settings.JWT_EXPIRES_IN
+            },
+            settings.JWT_SECRET,
+            algorithm='HS256'
+        )
+    
+    def test_get_user_list_no_auth(self):
+        """Test GET /api/v1/users - Returns paginated user list without auth"""
+        response = self.client.get('/api/v1/users')
+        
+        # Should return 200 OK
+        self.assertEqual(response.status_code, 200)
+        
+        # Response should contain pagination data and users
+        data = response.json()
+        self.assertIn('users', data)
+        self.assertIn('limit', data)
+        self.assertIn('offset', data)
+        self.assertIn('count', data)
+        self.assertIn('total', data)
+        self.assertIn('moreAvailable', data)
+        
+        # Should have at least our test users
+        self.assertGreaterEqual(data['count'], 2)
+    
+    def test_get_user_list_with_pagination(self):
+        """Test GET /api/v1/users with pagination parameters"""
+        response = self.client.get('/api/v1/users?limit=1&offset=0')
+        
+        # Should return 200 OK
+        self.assertEqual(response.status_code, 200)
+        
+        # Response should respect pagination
+        data = response.json()
+        self.assertEqual(data['limit'], 1)
+        self.assertEqual(data['offset'], 0)
+        self.assertEqual(data['count'], 1)
+    
+    def test_get_user_list_with_search(self):
+        """Test GET /api/v1/users with search parameter"""
+        response = self.client.get('/api/v1/users?search=TestUser1')
+        
+        # Should return 200 OK
+        self.assertEqual(response.status_code, 200)
+        
+        # Response should contain filtered users
+        data = response.json()
+        self.assertGreaterEqual(data['count'], 1)
+        
+        # Check that result contains our search term
+        if data['count'] > 0:
+            user_nicknames = [u['nickname'] for u in data['users']]
+            self.assertTrue(any('TestUser1' in nick for nick in user_nicknames))
+    
+    def test_get_user_details(self):
+        """Test GET /api/v1/users/{userUid} - Returns user details"""
+        response = self.client.get(f'/api/v1/users/{self.test_user1.uid}')
+        
+        # Should return 200 OK
+        self.assertEqual(response.status_code, 200)
+        
+        # Response should contain user details
+        data = response.json()
+        self.assertIn('user', data)
+        self.assertEqual(data['user']['uid'], self.test_user1.uid)
+        self.assertEqual(data['user']['nickname'], self.test_user1.nickname)
+    
+    def test_get_user_details_not_found(self):
+        """Test GET /api/v1/users/{userUid} with invalid UID - Should return 404"""
+        response = self.client.get('/api/v1/users/invalid-uid-12345')
+        
+        # Should return 404 Not Found
+        self.assertEqual(response.status_code, 404)
+    
+    def test_patch_user_details_as_admin(self):
+        """Test PATCH /api/v1/users/{userUid} - Admin can modify user details"""
+        response = self.client.patch(
+            f'/api/v1/users/{self.test_user1.uid}',
+            data=json.dumps({'nickname': 'ModifiedNickname'}),
+            content_type='application/json',
+            HTTP_AUTHORIZATION=f'Bearer {self.admin_token}'
+        )
+        
+        # Should return 200 OK
+        self.assertEqual(response.status_code, 200)
+        
+        # Response should contain updated user
+        data = response.json()
+        self.assertIn('user', data)
+        self.assertEqual(data['user']['nickname'], 'ModifiedNickname')
+        
+        # Verify in database
+        self.test_user1.refresh_from_db()
+        self.assertEqual(self.test_user1.nickname, 'ModifiedNickname')
+    
+    def test_patch_user_details_as_non_admin(self):
+        """Test PATCH /api/v1/users/{userUid} without admin permission - Should return 403"""
+        response = self.client.patch(
+            f'/api/v1/users/{self.test_user2.uid}',
+            data=json.dumps({'nickname': 'ModifiedNickname'}),
+            content_type='application/json',
+            HTTP_AUTHORIZATION=f'Bearer {self.test_token}'
+        )
+        
+        # Should return 403 Forbidden
+        self.assertEqual(response.status_code, 403)
+    
+    def test_patch_user_deactivate_as_admin(self):
+        """Test PATCH /api/v1/users/{userUid} - Admin can deactivate user"""
+        response = self.client.patch(
+            f'/api/v1/users/{self.test_user1.uid}',
+            data=json.dumps({'active': False}),
+            content_type='application/json',
+            HTTP_AUTHORIZATION=f'Bearer {self.admin_token}'
+        )
+        
+        # Should return 200 OK
+        self.assertEqual(response.status_code, 200)
+        
+        # Verify in database
+        self.test_user1.refresh_from_db()
+        self.assertFalse(self.test_user1.active)
+        
+        # Reactivate for cleanup
+        self.test_user1.active = True
+        self.test_user1.save()
+    
+    def test_delete_user_as_admin(self):
+        """Test DELETE /api/v1/users/{userUid} - Admin can delete user"""
+        # Create a user to delete
+        delete_user = User.objects.create(
+            uid='delete-user-uid-2',
+            steamId='76561198099999999',
+            nickname='DeleteUser2',
+            active=True
+        )
+        
+        response = self.client.delete(
+            f'/api/v1/users/{delete_user.uid}',
+            HTTP_AUTHORIZATION=f'Bearer {self.admin_token}'
+        )
+        
+        # Should return 200 OK
+        self.assertEqual(response.status_code, 200)
+        
+        # Response should contain success indicator
+        data = response.json()
+        self.assertIn('success', data)
+        self.assertTrue(data['success'])
+        
+        # Verify user is deleted
+        self.assertFalse(User.objects.filter(uid=delete_user.uid).exists())
+    
+    def test_delete_user_as_non_admin(self):
+        """Test DELETE /api/v1/users/{userUid} without admin permission - Should return 403"""
+        response = self.client.delete(
+            f'/api/v1/users/{self.test_user2.uid}',
+            HTTP_AUTHORIZATION=f'Bearer {self.test_token}'
+        )
+        
+        # Should return 403 Forbidden
+        self.assertEqual(response.status_code, 403)
+    
+    def test_delete_user_not_found(self):
+        """Test DELETE /api/v1/users/{userUid} with invalid UID - Should return 404"""
+        response = self.client.delete(
+            '/api/v1/users/invalid-uid-99999',
+            HTTP_AUTHORIZATION=f'Bearer {self.admin_token}'
+        )
+        
+        # Should return 404 Not Found
+        self.assertEqual(response.status_code, 404)
+    
+    def test_get_user_missions_list(self):
+        """Test GET /api/v1/users/{userUid}/missions - Returns user's missions"""
+        response = self.client.get(f'/api/v1/users/{self.test_user1.uid}/missions')
+        
+        # Should return 200 OK
+        self.assertEqual(response.status_code, 200)
+        
+        # Response should contain pagination data and missions
+        data = response.json()
+        self.assertIn('missions', data)
+        self.assertIn('limit', data)
+        self.assertIn('offset', data)
+        self.assertIn('count', data)
+        self.assertIn('total', data)
+        self.assertIn('moreAvailable', data)
+    
+    def test_get_user_missions_list_with_pagination(self):
+        """Test GET /api/v1/users/{userUid}/missions with pagination parameters"""
+        response = self.client.get(f'/api/v1/users/{self.test_user1.uid}/missions?limit=5&offset=0')
+        
+        # Should return 200 OK
+        self.assertEqual(response.status_code, 200)
+        
+        # Response should respect pagination
+        data = response.json()
+        self.assertEqual(data['limit'], 5)
+        self.assertEqual(data['offset'], 0)
+    
+    def test_get_user_missions_not_found(self):
+        """Test GET /api/v1/users/{userUid}/missions with invalid UID - Should return 404"""
+        response = self.client.get('/api/v1/users/invalid-uid-12345/missions')
+        
+        # Should return 404 Not Found
+        self.assertEqual(response.status_code, 404)

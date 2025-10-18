@@ -24,7 +24,7 @@ services:
       dockerfile: Dockerfile
     container_name: slotlist-backend
     volumes:
-      - ./backend:/app
+      - ./backend/src:/app
     ports:
       - "8000:8000"
     environment:

@@ -147,6 +147,8 @@ CORS_ALLOWED_ORIGINS = [
     "http://frontend-dev:3000",
     "http://frontend:4000",
     "http://backend:8000",
+    "https://api.slotlist.online",
+    "https://slotlist.online",
 ]
 
 # Also allow localhost and Docker network patterns for any port
@@ -169,6 +171,12 @@ CORS_ALLOW_HEADERS = [
     'user-agent',
     'x-csrftoken',
     'x-requested-with',
+]
+
+# CSRF Settings
+CSRF_TRUSTED_ORIGINS = [
+    "https://api.slotlist.online",
+    "https://slotlist.online",
 ]
 
 # JWT Settings

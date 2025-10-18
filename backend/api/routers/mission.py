@@ -72,19 +72,18 @@ def get_mission(request, slug: str):
         'title': mission.title,
         'description': mission.description,
         'briefing_time': mission.briefing_time,
-        'slot_list_time': mission.slot_list_time,
+        'slot_list_time': mission.slotting_time,
         'start_time': mission.start_time,
         'end_time': mission.end_time,
         'visibility': mission.visibility,
-        'tech_teleport': mission.tech_teleport,
-        'tech_respawn': mission.tech_respawn,
+        'tech_support': mission.tech_support,
         'details_map': mission.details_map,
         'details_game_mode': mission.details_game_mode,
-        'details_required_dlcs': mission.details_required_dlcs,
+        'details_required_dlcs': mission.required_dlcs,
         'game_server': mission.game_server,
         'voice_comms': mission.voice_comms,
         'repositories': mission.repositories,
-        'rules_of_engagement': mission.rules_of_engagement,
+        'rules_of_engagement': mission.rules,
         'image_url': mission.image_url,
         'creator': {
             'uid': mission.creator.uid,
@@ -127,19 +126,18 @@ def create_mission(request, payload: MissionCreateSchema):
         title=payload.title,
         description=payload.description,
         briefing_time=payload.briefing_time,
-        slot_list_time=payload.slot_list_time,
+        slotting_time=payload.slot_list_time,
         start_time=payload.start_time,
         end_time=payload.end_time,
         visibility=payload.visibility,
-        tech_teleport=payload.tech_teleport,
-        tech_respawn=payload.tech_respawn,
+        tech_support=payload.tech_support,
         details_map=payload.details_map,
         details_game_mode=payload.details_game_mode,
-        details_required_dlcs=payload.details_required_dlcs,
+        required_dlcs=payload.details_required_dlcs,
         game_server=payload.game_server,
         voice_comms=payload.voice_comms,
         repositories=payload.repositories,
-        rules_of_engagement=payload.rules_of_engagement,
+        rules=payload.rules_of_engagement,
         creator=user,
         community=community
     )
@@ -150,19 +148,18 @@ def create_mission(request, payload: MissionCreateSchema):
         'title': mission.title,
         'description': mission.description,
         'briefing_time': mission.briefing_time,
-        'slot_list_time': mission.slot_list_time,
+        'slot_list_time': mission.slotting_time,
         'start_time': mission.start_time,
         'end_time': mission.end_time,
         'visibility': mission.visibility,
-        'tech_teleport': mission.tech_teleport,
-        'tech_respawn': mission.tech_respawn,
+        'tech_support': mission.tech_support,
         'details_map': mission.details_map,
         'details_game_mode': mission.details_game_mode,
-        'details_required_dlcs': mission.details_required_dlcs,
+        'details_required_dlcs': mission.required_dlcs,
         'game_server': mission.game_server,
         'voice_comms': mission.voice_comms,
         'repositories': mission.repositories,
-        'rules_of_engagement': mission.rules_of_engagement,
+        'rules_of_engagement': mission.rules,
         'image_url': mission.image_url,
         'creator': {
             'uid': user.uid,
@@ -208,23 +205,21 @@ def update_mission(request, slug: str, payload: MissionUpdateSchema):
     if payload.briefing_time is not None:
         mission.briefing_time = payload.briefing_time
     if payload.slot_list_time is not None:
-        mission.slot_list_time = payload.slot_list_time
+        mission.slotting_time = payload.slot_list_time
     if payload.start_time is not None:
         mission.start_time = payload.start_time
     if payload.end_time is not None:
         mission.end_time = payload.end_time
     if payload.visibility is not None:
         mission.visibility = payload.visibility
-    if payload.tech_teleport is not None:
-        mission.tech_teleport = payload.tech_teleport
-    if payload.tech_respawn is not None:
-        mission.tech_respawn = payload.tech_respawn
+    if payload.tech_support is not None:
+        mission.tech_support = payload.tech_support
     if payload.details_map is not None:
         mission.details_map = payload.details_map
     if payload.details_game_mode is not None:
         mission.details_game_mode = payload.details_game_mode
     if payload.details_required_dlcs is not None:
-        mission.details_required_dlcs = payload.details_required_dlcs
+        mission.required_dlcs = payload.details_required_dlcs
     if payload.game_server is not None:
         mission.game_server = payload.game_server
     if payload.voice_comms is not None:
@@ -232,7 +227,7 @@ def update_mission(request, slug: str, payload: MissionUpdateSchema):
     if payload.repositories is not None:
         mission.repositories = payload.repositories
     if payload.rules_of_engagement is not None:
-        mission.rules_of_engagement = payload.rules_of_engagement
+        mission.rules = payload.rules_of_engagement
     
     mission.save()
     
@@ -242,19 +237,18 @@ def update_mission(request, slug: str, payload: MissionUpdateSchema):
         'title': mission.title,
         'description': mission.description,
         'briefing_time': mission.briefing_time,
-        'slot_list_time': mission.slot_list_time,
+        'slot_list_time': mission.slotting_time,
         'start_time': mission.start_time,
         'end_time': mission.end_time,
         'visibility': mission.visibility,
-        'tech_teleport': mission.tech_teleport,
-        'tech_respawn': mission.tech_respawn,
+        'tech_support': mission.tech_support,
         'details_map': mission.details_map,
         'details_game_mode': mission.details_game_mode,
-        'details_required_dlcs': mission.details_required_dlcs,
+        'details_required_dlcs': mission.required_dlcs,
         'game_server': mission.game_server,
         'voice_comms': mission.voice_comms,
         'repositories': mission.repositories,
-        'rules_of_engagement': mission.rules_of_engagement,
+        'rules_of_engagement': mission.rules,
         'image_url': mission.image_url,
         'creator': {
             'uid': mission.creator.uid,

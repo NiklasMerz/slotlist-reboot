@@ -26,7 +26,7 @@ services:
     volumes:
       - ./backend/src:/app
     ports:
-      - "8000:8000"
+      - "8001:8000"
     environment:
       - DEBUG=True
       - DB_DATABASE=slotlist
@@ -69,7 +69,7 @@ services:
       - "3000:3000"
     environment:
       - NODE_ENV=development
-      - BACKEND_URL=http://backend:8000
+      - BACKEND_URL=http://backend:8001
     depends_on:
       backend:
         condition: service_healthy
@@ -82,7 +82,7 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
       args:
-        - BACKEND_URL=http://localhost:8000
+        - BACKEND_URL=https://api.slotlist.online
     container_name: slotlist-frontend
     ports:
       - "4000:80"

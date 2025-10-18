@@ -34,28 +34,7 @@ ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '*').split(',')
 
 
 # Application definition
-
-INSTALLED_APPS = [
-    'django.contrib.admin',
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.messages',
-    'django.contrib.staticfiles',
-    'corsheaders',
-    'api',
-]
-
-MIDDLEWARE = [
-    'django.middleware.security.SecurityMiddleware',
-    'corsheaders.middleware.CorsMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
-]
+# These will be overridden below based on environment
 
 ROOT_URLCONF = 'slotlist_backend.urls'
 
@@ -81,16 +60,102 @@ WSGI_APPLICATION = 'slotlist_backend.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.getenv('DB_DATABASE', 'slotlist'),
-        'USER': os.getenv('DB_USERNAME', 'postgres'),
-        'PASSWORD': os.getenv('DB_PASSWORD', ''),
-        'HOST': os.getenv('DB_HOST', 'localhost'),
-        'PORT': os.getenv('DB_PORT', '5432'),
+# Detect if running in Cloudflare Workers environment
+def is_cloudflare_workers():
+    # Primary detection: explicit environment variable
+    use_d1 = os.getenv('USE_D1_DATABASE', '').lower() in ('true', '1', 'yes')
+    if use_d1:
+        return True
+    
+    # Secondary detection: check for Workers-specific environment
+    try:
+        # Check for Cloudflare Workers runtime characteristics
+        import sys
+        if 'pyodide' in sys.modules or hasattr(__builtins__, 'addEventListener'):
+            return True
+    except:
+        pass
+    
+    return False
+
+if is_cloudflare_workers():
+    # Use D1 database binding for Cloudflare Workers
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django_cf.d1_binding',
+            'CLOUDFLARE_BINDING': 'DB',  # Must match binding name in wrangler.toml
+        }
     }
-}
+    
+    # Minimal configuration for Cloudflare Workers to avoid conflicts
+    # Remove problematic apps that aren't needed for API-only deployment
+    INSTALLED_APPS = [
+        'django.contrib.contenttypes',
+        'django.contrib.auth',
+        'corsheaders',
+        'django_cf',
+        'api',
+    ]
+    
+    # Minimal middleware for Workers
+    MIDDLEWARE = [
+        'corsheaders.middleware.CorsMiddleware',
+        'django.middleware.common.CommonMiddleware',
+        'django.contrib.auth.middleware.AuthenticationMiddleware',
+    ]
+    
+    # Disable features that can cause startup conflicts in Workers
+    USE_I18N = False
+    USE_L10N = False
+    USE_TZ = True  # Keep timezone support for API
+    
+    # Disable static files handling for Workers
+    STATIC_URL = None
+    STATIC_ROOT = None
+    STATICFILES_DIRS = []
+    
+    # Minimal password validation for Workers
+    AUTH_PASSWORD_VALIDATORS = []
+    
+    # Disable admin interface completely
+    ADMIN_ENABLED = False
+    
+else:
+    # Use PostgreSQL for local development and traditional deployments
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': os.getenv('DB_DATABASE', 'slotlist'),
+            'USER': os.getenv('DB_USERNAME', 'postgres'),
+            'PASSWORD': os.getenv('DB_PASSWORD', ''),
+            'HOST': os.getenv('DB_HOST', 'localhost'),
+            'PORT': os.getenv('DB_PORT', '5432'),
+        }
+    }
+    
+    # Full configuration for local development
+    INSTALLED_APPS = [
+        'django.contrib.admin',
+        'django.contrib.auth',
+        'django.contrib.contenttypes',
+        'django.contrib.sessions',
+        'django.contrib.messages',
+        'django.contrib.staticfiles',
+        'corsheaders',
+        'django_cf',
+        'api',
+    ]
+
+    MIDDLEWARE = [
+        'django.middleware.security.SecurityMiddleware',
+        'corsheaders.middleware.CorsMiddleware',
+        'django.contrib.sessions.middleware.SessionMiddleware',
+        'django.middleware.common.CommonMiddleware',
+        'django.middleware.csrf.CsrfViewMiddleware',
+        'django.contrib.auth.middleware.AuthenticationMiddleware',
+        'django.contrib.messages.middleware.MessageMiddleware',
+        'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    ]
 
 
 # Password validation
@@ -128,6 +193,10 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 STATIC_URL = 'static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATICFILES_DIRS = [
+    BASE_DIR / 'static',
+]
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field

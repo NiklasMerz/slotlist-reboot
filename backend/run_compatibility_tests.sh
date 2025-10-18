@@ -10,17 +10,17 @@ echo "API Compatibility Test Suite"
 echo "================================"
 echo ""
 
-# Change to rewrite directory
-cd "$(dirname "$0")"
+# Change to src directory
+cd "$(dirname "$0")/src"
 
 # Check if virtual environment exists
-if [ ! -d "venv" ]; then
+if [ ! -d "../venv" ]; then
     echo "⚠️  No virtual environment found. Creating one..."
-    python3 -m venv venv
-    source venv/bin/activate
-    pip install -r requirements.txt
+    cd .. && python3 -m venv venv && cd src
+    source ../venv/bin/activate
+    pip install -r ../requirements.txt
 else
-    source venv/bin/activate
+    source ../venv/bin/activate
 fi
 
 # Check if database is configured

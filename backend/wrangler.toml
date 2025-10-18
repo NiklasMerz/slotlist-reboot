@@ -1,0 +1,42 @@
+name = "slotlist-backend"
+main = "worker.py"
+compatibility_date = "2024-11-18"
+compatibility_flags = ["python_workers"]
+
+[python]
+version = "3.11"
+
+[vars]
+USE_D1_DATABASE = "true"
+
+[observability]
+enabled = true
+head_sampling_rate = 1
+
+[observability.logs]
+enabled = true
+head_sampling_rate = 1
+persist = true
+invocation_logs = true
+
+[[d1_databases]]
+binding = "DB"
+database_name = "slotlist-db"
+database_id = "429e5022-0969-49b4-8b08-97de07af47ac"
+migrations_dir = "migrations"
+
+[env.production.vars]
+DJANGO_SECRET_KEY = "your-production-secret-key"
+CONFIG_JWT_SECRET = "your-jwt-secret"
+CONFIG_STEAM_API_SECRET = "your-steam-api-key"
+DEBUG = "False"
+ALLOWED_HOSTS = "your-domain.workers.dev,your-custom-domain.com"
+USE_D1_DATABASE = "true"
+
+[env.staging.vars]
+DJANGO_SECRET_KEY = "your-staging-secret-key"
+CONFIG_JWT_SECRET = "your-staging-jwt-secret"
+CONFIG_STEAM_API_SECRET = "your-steam-api-key"
+DEBUG = "True"
+ALLOWED_HOSTS = "your-staging-domain.workers.dev"
+USE_D1_DATABASE = "true"

@@ -82,7 +82,7 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
       args:
-        - BACKEND_URL=https://api.slotlist.online
+        - BACKEND_URL=https://api.slotlist.online/api
     container_name: slotlist-frontend
     ports:
       - "4000:80"

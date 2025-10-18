@@ -4,7 +4,7 @@ from typing import List
 from uuid import UUID
 from datetime import datetime
 from django.utils.text import slugify
-from api.models import Mission, Community, User
+from api.models import Mission, Community, User, MissionSlotGroup, MissionSlot
 from api.schemas import MissionSchema, MissionCreateSchema, MissionUpdateSchema
 from api.auth import has_permission
 
@@ -295,3 +295,52 @@ def delete_mission(request, slug: str):
     mission.delete()
     
     return {'success': True}
+
+
+@router.get('/{slug}/slots', auth=None)
+def get_mission_slots(request, slug: str):
+    """Get all slots for a mission organized by slot groups"""
+    mission = get_object_or_404(Mission.objects.select_related('creator', 'community'), slug=slug)
+    
+    # Get all slot groups with their slots for this mission
+    slot_groups = MissionSlotGroup.objects.filter(mission=mission).prefetch_related(
+        'slots__assignee',
+        'slots__restricted_community'
+    ).order_by('order_number')
+    
+    result = []
+    for slot_group in slot_groups:
+        slots = []
+        for slot in slot_group.slots.order_by('order_number'):
+            slot_data = {
+                'uid': str(slot.uid),
+                'title': slot.title,
+                'description': slot.description,
+                'detailedDescription': slot.detailed_description,
+                'orderNumber': slot.order_number,
+                'requiredDLCs': slot.required_dlcs,
+                'externalAssignee': slot.external_assignee,
+                'assignee': {
+                    'uid': str(slot.assignee.uid),
+                    'nickname': slot.assignee.nickname,
+                    'steamId': slot.assignee.steam_id,
+                } if slot.assignee else None,
+                'restrictedCommunity': {
+                    'uid': str(slot.restricted_community.uid),
+                    'name': slot.restricted_community.name,
+                    'tag': slot.restricted_community.tag,
+                    'slug': slot.restricted_community.slug,
+                } if slot.restricted_community else None
+            }
+            slots.append(slot_data)
+        
+        group_data = {
+            'uid': str(slot_group.uid),
+            'title': slot_group.title,
+            'description': slot_group.description,
+            'orderNumber': slot_group.order_number,
+            'slots': slots
+        }
+        result.append(group_data)
+    
+    return result

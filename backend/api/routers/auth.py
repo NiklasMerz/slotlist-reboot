@@ -52,8 +52,12 @@ def get_steam_login_url(request):
     return {'url': login_url}
 
 
+class SteamLoginSchema(BaseModel):
+    url: str
+
+
 @router.post('/steam', response=AuthResponseSchema, auth=None)
-def verify_steam_login(request, url: str):
+def verify_steam_login(request, payload: SteamLoginSchema):
     """
     Verify Steam OpenID authentication and return JWT
     
@@ -98,7 +102,7 @@ def verify_steam_login(request, url: str):
     return_url = request.GET.get('return_url', settings.JWT_ISSUER)
     
     # Verify Steam login and get Steam ID
-    steam_id = steam_service.verify_and_get_steam_id(url, return_url)
+    steam_id = steam_service.verify_and_get_steam_id(payload.url, return_url)
     
     if not steam_id:
         return 400, {'detail': 'Invalid Steam OpenID response'}

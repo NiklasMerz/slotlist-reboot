@@ -60,24 +60,52 @@ class SteamOpenIDService:
         Returns:
             str: Steam ID if verification successful, None otherwise
         """
-        openid_consumer = consumer.Consumer({}, self.store)
-        
         # Parse the OpenID response from URL parameters
         params = self._parse_openid_params(openid_url)
         
-        # Complete authentication
-        auth_response = openid_consumer.complete(params, return_url)
-        
-        if auth_response.status == consumer.SUCCESS:
-            # Extract Steam ID from claimed identifier
-            # Format: https://steamcommunity.com/openid/id/<STEAM_ID>
-            claimed_id = auth_response.identity_url
-            steam_id_match = re.match(r'https?://steamcommunity\.com/openid/id/(\d+)', claimed_id)
+        # Steam uses stateless mode, so we verify directly without association
+        # Check required OpenID parameters
+        if 'openid.claimed_id' not in params:
+            return None
             
-            if steam_id_match:
-                return steam_id_match.group(1)
+        # Verify the response with Steam
+        if not self._verify_openid_response(params):
+            return None
+        
+        # Extract Steam ID from claimed identifier
+        # Format: https://steamcommunity.com/openid/id/<STEAM_ID>
+        claimed_id = params.get('openid.claimed_id', '')
+        steam_id_match = re.match(r'https?://steamcommunity\.com/openid/id/(\d+)', claimed_id)
+        
+        if steam_id_match:
+            return steam_id_match.group(1)
         
         return None
+    
+    def _verify_openid_response(self, params: Dict[str, str]) -> bool:
+        """
+        Verify OpenID response directly with Steam
+        
+        Args:
+            params: OpenID parameters from callback
+            
+        Returns:
+            bool: True if verification successful
+        """
+        # Change mode to check_authentication for verification
+        verify_params = params.copy()
+        verify_params['openid.mode'] = 'check_authentication'
+        
+        try:
+            response = requests.post(self.STEAM_OPENID_URL, data=verify_params, timeout=10)
+            response.raise_for_status()
+            
+            # Check if Steam confirms the authentication
+            content = response.text
+            return 'is_valid:true' in content
+        except Exception as e:
+            print(f"OpenID verification failed: {e}")
+            return False
     
     def get_steam_user_info(self, steam_id: str) -> Dict[str, Any]:
         """

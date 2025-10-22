@@ -2,8 +2,8 @@
   <b-jumbotron header="Privacy policy" lead="Last updated: <strong>2017-11-15 14:28 CET</strong>.">
     <p class="text-justify">
       The
-      <router-link :to="{name: 'home'}">slotlist.info</router-link> team ("us", "we" or "our") operates the
-      <router-link :to="{name: 'home'}">slotlist.info</router-link> website (the "Service").
+      <router-link :to="{name: 'home'}">slotlist.online</router-link> team ("us", "we" or "our") operates the
+      <router-link :to="{name: 'home'}">slotlist.online</router-link> website (the "Service").
       <br>
       <br>This page informs you of our policies regarding the collection, use and discolsure of personal information when you use our Service.
       <br>

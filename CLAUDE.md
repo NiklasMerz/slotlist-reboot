@@ -124,7 +124,7 @@ DB_PORT=5432
 ```
 
 ### Frontend Build Configuration
-- **Development**: `build/webpack.dev.js` - Uses hardcoded API URLs for slotlist.info
+- **Development**: `build/webpack.dev.js` - Uses hardcoded API URLs for slotlist.online
 - **Production**: `build/webpack.prod.js` - Production build configuration
 - **Environment**: Variables injected via webpack DefinePlugin as `process.env`
 
@@ -161,4 +161,4 @@ No test suite currently configured. The frontend uses an older stack without mod
 - Both TypeScript and Django backends can operate on same database
 
 ## Project Status
-The original slotlist.info is scheduled for shutdown on December 31, 2025. This reboot represents a modernization effort with the Django backend providing a more maintainable foundation while preserving full compatibility.
+The original slotlist.online is scheduled for shutdown on December 31, 2025. This reboot represents a modernization effort with the Django backend providing a more maintainable foundation while preserving full compatibility.

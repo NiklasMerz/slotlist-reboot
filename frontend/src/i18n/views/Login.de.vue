@@ -1,11 +1,11 @@
 <template>
   <div>
-    <b-jumbotron header="Anmeldung via Steam" lead="slotlist.info benutzt Steam OpenID Authentifizierung. Du kannst daher deinen bestehenden Steam Account benutzen, um dich auf unserer Seite einzuloggen." v-if="!working">
+    <b-jumbotron header="Anmeldung via Steam" lead="slotlist.online benutzt Steam OpenID Authentifizierung. Du kannst daher deinen bestehenden Steam Account benutzen, um dich auf unserer Seite einzuloggen." v-if="!working">
       <p class="text-justify">
         Die Website kann weder deine Steam-Anmeldedaten lesen, noch speichern oder irgendeine Aktion mit deinem Steam Account durchführen.
         <br>Wir erhalten einzig die SteamID und einige öffentlich ersichtlichen Daten (wie z.B. den Nicknamen) über deinen Account.
         <br>Die Informationen, welche Steam an uns übermittelt, werden dazu verwendet, einen eindeutigen Benutzer in unserem Backend zu erstellen. Dadurch können alle notwendigen Funktionen von
-        <router-link to="/">slotlist.info</router-link> verwendet werden.
+        <router-link to="/">slotlist.online</router-link> verwendet werden.
         <br>Genauere Details bezüglich der Datenschutzerklärung dieser Website können
         <router-link to="/privacy">hier</router-link> gefunden werden.
       </p>
@@ -52,7 +52,7 @@
         <p>
           Wenn du dich das erste Mal einloggst, legt unser Backend einen neuen Benutzer in der Datenbank an und speichert die SteamID, welche uns von Steam's Login-Dienst übermittelt wird, sowie deinen (öffentlichen) Nickname zu diesem Zeitpunkt. Du kannst den Nickname auf dieser Website jederzeit ändern, indem du auf deine
           <router-link :to="{name: 'account'}">Account-Seite</router-link> gehst während du eingeloggt bist. Bitte beachte, dass die Änderung deines Steam-Nicknames nicht den Nickname auf
-          <router-link :to="{name: 'home'}">slotlist.info</router-link> aktualisiert, weil wir die Steam-Server nach der initialen Anmeldung nicht mehr nach deinem Nickname fragen. Neben der SteamID und dem Nickname beinhaltet die gespeicherte Benutzerinformation auch noch eine eindeutige ID, welche von unserem Backend zufällig erstellt wird und benötigt wird, um einen Benutzer eindeutig im Service identifizieren zu können.<br>Wenn du dich für einen Missionsslot anmeldest, wird ein Datenbankeintrag angelegt, welcher die Slot ID, deine Benutzer ID sowie den optionale Kommentar - sofern du eines angegeben hast - speichert.<br>Solltest du einen Auszug aller Daten, die wir aktuell über dich speichern, erhalten wollen, kontaktiere uns bitte auf einem der Wege, die auf unserer
+          <router-link :to="{name: 'home'}">slotlist.online</router-link> aktualisiert, weil wir die Steam-Server nach der initialen Anmeldung nicht mehr nach deinem Nickname fragen. Neben der SteamID und dem Nickname beinhaltet die gespeicherte Benutzerinformation auch noch eine eindeutige ID, welche von unserem Backend zufällig erstellt wird und benötigt wird, um einen Benutzer eindeutig im Service identifizieren zu können.<br>Wenn du dich für einen Missionsslot anmeldest, wird ein Datenbankeintrag angelegt, welcher die Slot ID, deine Benutzer ID sowie den optionale Kommentar - sofern du eines angegeben hast - speichert.<br>Solltest du einen Auszug aller Daten, die wir aktuell über dich speichern, erhalten wollen, kontaktiere uns bitte auf einem der Wege, die auf unserer
           <router-link :to="{name: 'about'}">Über-Seite</router-link> erwähnt werden, und wir stellen dir gerne alle Informationen zur Verfügung, die wir haben.<br>Genauere Informationen zur Datenschutzrichtlinie dieser Website können
           <router-link :to="{name: 'privacy'}">hier</router-link> gefunden werden.
         </p>

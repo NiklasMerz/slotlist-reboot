@@ -708,8 +708,8 @@ export default {
       })
     },
     downloadICalFile(beginTime) {
-      let data = `BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//slotlist.info//slotlist-frontend v${process.env.FRONTEND_VERSION}//EN\r\n`
-      data += `CALSCALE:GREGORIAN\r\nMETHOD:PUBLIC\r\nX-WR-CALNAME:slotlist.info\r\nX-ORIGINAL-URL:${process.env.BASE_URL}\r\n`
+      let data = `BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//slotlist.online//slotlist-frontend v${process.env.FRONTEND_VERSION}//EN\r\n`
+      data += `CALSCALE:GREGORIAN\r\nMETHOD:PUBLIC\r\nX-WR-CALNAME:slotlist.online\r\nX-ORIGINAL-URL:${process.env.BASE_URL}\r\n`
       data += `X-WR-CALDESC:${this.$t('title.browser')}\r\nBEGIN:VEVENT\r\n`
       data += `UID:${this.missionDetails.slug}@${process.env.BASE_URL}\r\n`
       data += `DTSTART;TZID=${this.$store.getters.timezone}:${moment(beginTime).format('YMMDD[T]HHmmss')}\r\n`

@@ -1,16 +1,16 @@
 <template>
-  <b-jumbotron header="Über slotlist.info">
+  <b-jumbotron header="Über slotlist.online">
     <p class="text-justify">
-      <router-link :to="{name: 'home'}">slotlist.info</router-link> wurde von
+      <router-link :to="{name: 'home'}">slotlist.online</router-link> wurde von
       <a href="https://github.com/MorpheusXAUT">MorpheusXAUT</a> entwickelt, da das andauernde Neu-Registrieren bei zahllosen ArmA-Communities, nur um bei deren Missionen mitzuspielen, nervig wurde. Das Tool erlaubt eine einfachere Erstellung und Verwaltung von Missionen und bietet schnellen und direkten Zugang für alle Benutzer - alles was dafür benötigt wird, ist ein Steam Account - und diesen sollte jeder hoffentlich haben, ansonsten wird das ArmA-Spielen schwer
       <i class="fa fa-smile-o"></i>
       <br>
       <br>Dieser Service wird gratis und ohne jegliche Garantie über Verfügbarkeit oder Erreichbarkeit angeboten - wir können
-      <router-link :to="{name: 'home'}">slotlist.info</router-link> jederzeit und ohne weitere Vorwarnungen beendigen. Da es unser Ziel ist, ein einfaches Mittel für eine breite Anzahl an ArmA-Enthusiasten zur Verfügung zu stellen, bemühen wir uns, die höchste Verfügbarkeit und Langlebigkeit zu erreichen und freuen uns dabei über jedes Feedback.
+      <router-link :to="{name: 'home'}">slotlist.online</router-link> jederzeit und ohne weitere Vorwarnungen beendigen. Da es unser Ziel ist, ein einfaches Mittel für eine breite Anzahl an ArmA-Enthusiasten zur Verfügung zu stellen, bemühen wir uns, die höchste Verfügbarkeit und Langlebigkeit zu erreichen und freuen uns dabei über jedes Feedback.
     </p>
     <h4>Entwicklung</h4>
     <p class="text-justify">
-      <router-link :to="{name: 'home'}">slotlist.info</router-link> wird aktuell ausschließlich von
+      <router-link :to="{name: 'home'}">slotlist.online</router-link> wird aktuell ausschließlich von
       <a href="https://github.com/MorpheusXAUT">MorpheusXAUT</a> entwickelt. Die Repostories des Frontend- und Backend-Sourcecodes sowie die aktuell eingesetzten Versionen können unterhalb gefunden werden. Bitte gib diese Informationen in jeglichen Fehlermeldungen an, da es die Fehlersuche erleichtert.
       <dl class="row">
         <dt class="col-1">Frontend</dt>
@@ -42,7 +42,7 @@
         </dd>
         <dt class="col-sm-3">schick uns eine Email</dt>
         <dd class="col-sm-9">
-          <a href="mailto:hello@slotlist.info?subject=slotlist.info - Hallo!">hello@slotlist.info</a>
+          <a href="mailto:hello@slotlist.online?subject=slotlist.online - Hallo!">hello@slotlist.online</a>
         </dd>
         <dt class="col-sm-3">tritt unserem Discord Server bei</dt>
         <dd class="col-sm-9">

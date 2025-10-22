@@ -24,7 +24,7 @@ base.plugins.push(
   new webpack.DefinePlugin({
     'process.env': {
       NODE_ENV: JSON.stringify('production'),
-      BASE_URL: JSON.stringify('https://slotlist.info'),
+      BASE_URL: JSON.stringify('https://slotlist.online'),
       BASE_API_URL: JSON.stringify('https://api.slotlist.online/api'),
       SENTRY_DSN: JSON.stringify(process.env.SENTRY_DSN),
       FRONTEND_VERSION: JSON.stringify(require('../package.json').version)

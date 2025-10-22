@@ -1,6 +1,6 @@
 # Slotlist Backend - Django Rewrite
 
-This directory contains the Django+Django Ninja rewrite of the slotlist.info backend.
+This directory contains the Django+Django Ninja rewrite of the slotlist.online backend.
 
 ## Overview
 
@@ -54,8 +54,8 @@ DB_PORT=5432
 
 # JWT
 CONFIG_JWT_SECRET=your-jwt-secret
-CONFIG_JWT_ISSUER=slotlist.info
-CONFIG_JWT_AUDIENCE=slotlist.info
+CONFIG_JWT_ISSUER=slotlist.online
+CONFIG_JWT_AUDIENCE=slotlist.online
 CONFIG_JWT_EXPIRESIN=86400
 
 # Steam API

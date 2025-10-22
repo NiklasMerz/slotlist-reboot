@@ -9,16 +9,16 @@
     <div class="row text-justify">
       <div class="col-6">
         <h5>Was ist
-          <router-link :to="{name: 'home'}">slotlist.info</router-link>?
+          <router-link :to="{name: 'home'}">slotlist.online</router-link>?
         </h5>
         <p>
-          <router-link :to="{name: 'home'}">slotlist.info</router-link> ist ein ArmA 3 Slotlist- und Missionsverwaltungs-Tool. Missionsersteller sowie Spieler können es benutzen, um einfach Missionen zu organisieren und Slots auszuwählen.
+          <router-link :to="{name: 'home'}">slotlist.online</router-link> ist ein ArmA 3 Slotlist- und Missionsverwaltungs-Tool. Missionsersteller sowie Spieler können es benutzen, um einfach Missionen zu organisieren und Slots auszuwählen.
         </p>
         <h5>Wer hat
-          <router-link :to="{name: 'home'}">slotlist.info</router-link> entwickelt und betreibt es?
+          <router-link :to="{name: 'home'}">slotlist.online</router-link> entwickelt und betreibt es?
         </h5>
         <p>
-          <router-link :to="{name: 'home'}">slotlist.info</router-link> wurde von
+          <router-link :to="{name: 'home'}">slotlist.online</router-link> wurde von
           <a href="https://steamcommunity.com/id/morpheusxaut">[SeL] MorpheusXAUT</a>, hauptsächlich als Slotting-Tool für die
           <a href="http://spezialeinheit-luchs.de">Spezialeinheit Luchs</a>, entwickelt. Wir haben uns dazu entschieden, den Dienst für alle verfügbar zu machen und hoffen, dass er eine nützliche Alternative zu Anmeldungen über verschiedene Foren bietet.
         </p>
@@ -28,17 +28,17 @@
           <router-link :to="{name: 'missionList'}">Missionen</router-link> einsehen und deren Details und Slotliste ansehen, ohne dich anmelden zu müssen. Beachte dabei aber bitte, dass Missionsersteller die Möglichkeit haben, Missionen nur für Community-Mitglieder oder ausgewählte Benutzer sichtbar zu machen - du siehst daher eventuell nicht alle Missionen, die du sehen würdest, wenn du eingeloggt wärst.
         </p>
         <h5>Muss ich mich auf
-          <router-link :to="{name: 'home'}">slotlist.info</router-link> für einen Slot anmelden, um an einer Mission teilnehmen zu können?
+          <router-link :to="{name: 'home'}">slotlist.online</router-link> für einen Slot anmelden, um an einer Mission teilnehmen zu können?
         </h5>
         <p>
           Das kommt einzig auf den Missionsersteller an -
-          <router-link :to="{name: 'home'}">slotlist.info</router-link> stellt diesen nur einen Dienst zur Verfügung, um ihre Missionen und Slotlist zu verwalten, wie sie sich dazu entscheiden, diesen einzusetzen, ist jedem Ersteller vorbehalten. Manche Missionsersteller könnten verlangen, dass jeder Mitspieler für einen Slot angemeldet und bestätigt ist, bevor die Mission anfängt, während andere eine externe Anmeldung via z.B. Community-Forum auch zulassen könnten und diese Website nur nutzen, um ihre Mission zu bewerben. Zuletzt können manche Ersteller auch zulassen, dass du zum Missionsbeginn erscheinst und einen der übrigen, noch freien Slots belegst. Am besten versuchst du, den Missionsersteller vor dem Beginn zu kontaktieren und zu fragen, falls du dir nicht sicher bist.
+          <router-link :to="{name: 'home'}">slotlist.online</router-link> stellt diesen nur einen Dienst zur Verfügung, um ihre Missionen und Slotlist zu verwalten, wie sie sich dazu entscheiden, diesen einzusetzen, ist jedem Ersteller vorbehalten. Manche Missionsersteller könnten verlangen, dass jeder Mitspieler für einen Slot angemeldet und bestätigt ist, bevor die Mission anfängt, während andere eine externe Anmeldung via z.B. Community-Forum auch zulassen könnten und diese Website nur nutzen, um ihre Mission zu bewerben. Zuletzt können manche Ersteller auch zulassen, dass du zum Missionsbeginn erscheinst und einen der übrigen, noch freien Slots belegst. Am besten versuchst du, den Missionsersteller vor dem Beginn zu kontaktieren und zu fragen, falls du dir nicht sicher bist.
         </p>
         <h5>Muss sicher jeder auf dieser Website anmelden, damit ich sie für meine Mission verwenden kann?</h5>
         <p>
           Idealerweise loggt sich jeder Spieler auf
-          <router-link :to="{name: 'home'}">slotlist.info</router-link> ein und meldet sich für seinen gewünschten Slot über die Slotliste deiner Mission an. Da wir uns aber bewusst sind, dass manche Leute nicht gerne eine externe Seite benutzen, um sich einen Slot für eine Mission auszusuchen, haben wir Missionserstellern auch die Möglichkeit gegeben, einen Slot zu "blockieren", wodurch andere
-          <router-link :to="{name: 'home'}">slotlist.info</router-link>-Benutzer sich nicht mehr auf diesen anmelden können - händische Slotzuweisungen von "externen" Spielern können dann als Slotbeschreibung hinzugefügt werden.<br>Während diese Art der Anmeldung nicht die selbe Funktionalität wie eine "normale" Anmeldung bietet, hoffen wir, dass dies eine akzeptable Alternative für unsere skeptischeren Spieler bietet.
+          <router-link :to="{name: 'home'}">slotlist.online</router-link> ein und meldet sich für seinen gewünschten Slot über die Slotliste deiner Mission an. Da wir uns aber bewusst sind, dass manche Leute nicht gerne eine externe Seite benutzen, um sich einen Slot für eine Mission auszusuchen, haben wir Missionserstellern auch die Möglichkeit gegeben, einen Slot zu "blockieren", wodurch andere
+          <router-link :to="{name: 'home'}">slotlist.online</router-link>-Benutzer sich nicht mehr auf diesen anmelden können - händische Slotzuweisungen von "externen" Spielern können dann als Slotbeschreibung hinzugefügt werden.<br>Während diese Art der Anmeldung nicht die selbe Funktionalität wie eine "normale" Anmeldung bietet, hoffen wir, dass dies eine akzeptable Alternative für unsere skeptischeren Spieler bietet.
         </p>
         <h5>Wie kann ich Slots für Community
           <em>XYZ</em> reservieren?</h5>
@@ -46,10 +46,10 @@
           Sollte sich die Leitung der Community
           <em>XYZ</em> dazu entschieden haben, ihre Community auf unserer Website zu repräsentieren und darum eine
           <router-link :to="{name: 'communityList'}">Community</router-link> angelegt haben, kannst du einfach einen Haken bei der "Reservierter Slot" Checkbox setzen, während du einen Slot erstellst oder bearbeitest, und nach dem Community-Namen suchen. Sobald der Slot reserviert ist, können sich nur noch Benutzer dafür anmelden, die als Mitglieder dieser Community auf
-          <router-link :to="{name: 'home'}">slotlist.info</router-link> gelistet sind.<br>Sollte sich Community
+          <router-link :to="{name: 'home'}">slotlist.online</router-link> gelistet sind.<br>Sollte sich Community
           <em>XYZ</em> dagegen entscheiden, auf unserer Website aufzutreten, solltest du den Slot blockieren, indem du einen Haken bei der "Blockierter Slot" Checkbox setzt und eine Nachricht ähnlich "Reserviert für Community
           <em>XYZ</em>" als Slotbeschreibung hinzufügst.<br>Genau wie bei der Spielerzuweisung via blockierten Slots stellt dies nicht die volle Funktionalität der Slotliste von
-          <router-link :to="{name: 'home'}">slotlist.info</router-link> zur Verfügung, dient aber als Alternative, falls du Spieler und Communities nicht ausschließen wollen, wenn diese sich gegen die Verwendung unseres Dienstes entscheiden.
+          <router-link :to="{name: 'home'}">slotlist.online</router-link> zur Verfügung, dient aber als Alternative, falls du Spieler und Communities nicht ausschließen wollen, wenn diese sich gegen die Verwendung unseres Dienstes entscheiden.
         </p>
         <h5>Ich bin noch immer skeptisch oder verwirrt...</h5>
         <p>
@@ -77,7 +77,7 @@
         <p>
           Wenn du dich das erste Mal einloggst, legt unser Backend einen neuen Benutzer in der Datenbank an und speichert die SteamID, welche uns von Steam's Login-Dienst übermittelt wird, sowie deinen (öffentlichen) Nickname zu diesem Zeitpunkt. Du kannst den Nickname auf dieser Website jederzeit ändern, indem du auf deine
           <router-link :to="{name: 'account'}">Account-Seite</router-link> gehst während du eingeloggt bist. Bitte beachte, dass die Änderung deines Steam-Nicknames nicht den Nickname auf
-          <router-link :to="{name: 'home'}">slotlist.info</router-link> aktualisiert, weil wir die Steam-Server nach der initialen Anmeldung nicht mehr nach deinem Nickname fragen. Neben der SteamID und dem Nickname beinhaltet die gespeicherte Benutzerinformation auch noch eine eindeutige ID, welche von unserem Backend zufällig erstellt wird und benötigt wird, um einen Benutzer eindeutig im Service identifizieren zu können.<br>Wenn du dich für einen Missionsslot anmeldest, wird ein Datenbankeintrag angelegt, welcher die Slot ID, deine Benutzer ID sowie den optionale Kommentar - sofern du eines angegeben hast - speichert.<br>Solltest du einen Auszug aller Daten, die wir aktuell über dich speichern, erhalten wollen, kontaktiere uns bitte auf einem der Wege, die auf unserer
+          <router-link :to="{name: 'home'}">slotlist.online</router-link> aktualisiert, weil wir die Steam-Server nach der initialen Anmeldung nicht mehr nach deinem Nickname fragen. Neben der SteamID und dem Nickname beinhaltet die gespeicherte Benutzerinformation auch noch eine eindeutige ID, welche von unserem Backend zufällig erstellt wird und benötigt wird, um einen Benutzer eindeutig im Service identifizieren zu können.<br>Wenn du dich für einen Missionsslot anmeldest, wird ein Datenbankeintrag angelegt, welcher die Slot ID, deine Benutzer ID sowie den optionale Kommentar - sofern du eines angegeben hast - speichert.<br>Solltest du einen Auszug aller Daten, die wir aktuell über dich speichern, erhalten wollen, kontaktiere uns bitte auf einem der Wege, die auf unserer
           <router-link :to="{name: 'about'}">Über-Seite</router-link> erwähnt werden, und wir stellen dir gerne alle Informationen zur Verfügung, die wir haben.<br>Genauere Informationen zur Datenschutzrichtlinie dieser Website können
           <router-link :to="{name: 'privacy'}">hier</router-link> gefunden werden.
         </p>

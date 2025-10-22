@@ -183,7 +183,7 @@ async fetchData({ commit }, payload) {
 
 ## Legacy Compatibility
 
-This project maintains compatibility with the original slotlist.info implementation:
+This project maintains compatibility with the original slotlist.online implementation:
 - Database schema cannot be changed
 - API responses must match original format
 - Frontend must work with existing user expectations

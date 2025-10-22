@@ -10,7 +10,7 @@
         <br>Österreich
         <br>
         <br>Email:
-        <a href="mailto:nick@slotlist.info?subject=slotlist.info - rechliche Anfrage">nick@slotlist.info</a>
+        <a href="mailto:nick@slotlist.online?subject=slotlist.online - rechliche Anfrage">nick@slotlist.online</a>
       </address>
     </p>
     <br>

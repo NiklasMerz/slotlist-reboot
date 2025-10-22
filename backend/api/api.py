@@ -17,9 +17,9 @@ class JWTAuth(HttpBearer):
 
 # Create API instance
 api = NinjaAPI(
-    title='slotlist.info API',
+    title='slotlist.online API',
     version='2.0.0',
-    description='Backend API for slotlist.info - ArmA 3 mission planning and slotlist management',
+    description='Backend API for slotlist.online - ArmA 3 mission planning and slotlist management',
     auth=JWTAuth()
 )
 

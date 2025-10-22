@@ -2,8 +2,8 @@
   <b-jumbotron header="Datenschutzerklärung" lead="Zuletzt aktualisiert: <strong>2017-11-15 14:28 CET</strong>.">
     <p class="text-justify">
       Das
-      <router-link :to="{name: 'home'}">slotlist.info</router-link> Team ("wir", "uns" oder "unser") betreibt die
-      <router-link :to="{name: 'home'}">slotlist.info</router-link>-Website (der "Dienst").
+      <router-link :to="{name: 'home'}">slotlist.online</router-link> Team ("wir", "uns" oder "unser") betreibt die
+      <router-link :to="{name: 'home'}">slotlist.online</router-link>-Website (der "Dienst").
       <br>
       <br>Diese Seite informiert über die Richtlinen zur Sammlung, Verarbeitung und Weitergabe von persönlichen Daten, die bei der Benutzung unseres Dienstes gesammelt werden.
       <br>

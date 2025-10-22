@@ -308,8 +308,8 @@ Permissions are included in JWT tokens:
   ],
   "iat": 1234567890,
   "exp": 1234654290,
-  "iss": "slotlist.info",
-  "aud": "slotlist.info",
+  "iss": "slotlist.online",
+  "aud": "slotlist.online",
   "sub": "user-uuid"
 }
 ```

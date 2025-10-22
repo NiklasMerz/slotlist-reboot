@@ -10,7 +10,7 @@
         <br>Austria
         <br>
         <br>Email:
-        <a href="mailto:nick@slotlist.info?subject=slotlist.info - legal inquiry">nick@slotlist.info</a>
+        <a href="mailto:nick@slotlist.online?subject=slotlist.online - legal inquiry">nick@slotlist.online</a>
       </address>
     </p>
     <br>

@@ -7,14 +7,14 @@ metadata:
     kubernetes.io/ingress.class: "traefik"
 spec:
   rules:
-    - host: slotlist.info
+    - host: slotlist.online
       http:
         paths:
           - path: /
             backend:
               serviceName: slotlist-frontend
               servicePort: http
-    - host: www.slotlist.info
+    - host: www.slotlist.online
       http:
         paths:
           - path: /

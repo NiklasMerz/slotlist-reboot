@@ -1,10 +1,10 @@
 # slotlist-frontend
-Frontend of [slotlist.info](https://slotlist.info), an ArmA 3 mission planning and slotlist management tool.  
+Frontend of [slotlist.online](https://slotlist.online), an ArmA 3 mission planning and slotlist management tool.  
 The corresponding backend implementation of this project can be found at [slotlist-backend](https://github.com/MorpheusXAUT/slotlist-backend).
 
 ## 📢 Project Status: Discontinued
 
-After nearly a decade of serving the ArmA community, slotlist.info will be shut down on 31 December 2025. The project is no longer actively maintained due to time and resource constraints, and its underlying technology stack has become outdated. This repository remains available as an archive for historical and reference purposes. Thank you to everyone who contributed and supported the project over the years!
+After nearly a decade of serving the ArmA community, slotlist.online will be shut down on 31 December 2025. The project is no longer actively maintained due to time and resource constraints, and its underlying technology stack has become outdated. This repository remains available as an archive for historical and reference purposes. Thank you to everyone who contributed and supported the project over the years!
 
 ## Installation
 ### Requirements
@@ -56,7 +56,7 @@ Generally speaking, slotlist-frontend can be deployed anywhere running a webserv
 
 [Let's Encrypt](https://letsencrypt.org/) provides excellent, free SSL certificates that are easy to integrate into your existing hosting, so there's no reason why you should run your site over plain HTTP!
 
-Please be advised that some configuration values might need modifications should you plan to run your own instance since they have been tailored to work for [slotlist.info](https://slotlist.info)'s main instance. This is especially relevant for the CSP/HPKP headers set - failing to set these properly will result in problems loading your site.
+Please be advised that some configuration values might need modifications should you plan to run your own instance since they have been tailored to work for [slotlist.online](https://slotlist.online)'s main instance. This is especially relevant for the CSP/HPKP headers set - failing to set these properly will result in problems loading your site.
 
 ## Contributing
 Pull requests are more than welcome - I am grateful for any help, no matter how small it is! For major changes, please open an issue first so proposed modifications can be discussed first.
@@ -64,7 +64,7 @@ Pull requests are more than welcome - I am grateful for any help, no matter how 
 All pull requests should be submitted to the `dev` branch - once a feature is fully implemented and tested, it will be merged to the `master` branch and deployed.  
 Attributions will be provided in the [Contributors](docs/Contributors.md) file inside the `docs/` folder as appropriate.
 
-In additional to development work for the backend or frontend projects, [slotlist.info](https://slotlist.info) also needs your help in providing accurate and complete translations. We are utilising [OneSky](https://morpheusxaut.oneskyapp.com/collaboration/project/133324) to crowd-source our translations and provide an easy interface to manage required strings. Feel free to contribute any translations or suggest a new language by opening an issue on the [slotlist-frontend repository](https://github.com/MorpheusXAUT/slotlist-frontend/issues).
+In additional to development work for the backend or frontend projects, [slotlist.online](https://slotlist.online) also needs your help in providing accurate and complete translations. We are utilising [OneSky](https://morpheusxaut.oneskyapp.com/collaboration/project/133324) to crowd-source our translations and provide an easy interface to manage required strings. Feel free to contribute any translations or suggest a new language by opening an issue on the [slotlist-frontend repository](https://github.com/MorpheusXAUT/slotlist-frontend/issues).
 
 ## Versioning
 slotlist-frontend uses [Semantic Versioning](https://semver.org/) for releases, every deployment will be tagged with a new, appropriate version - old releases can be found on GitHub's [release tab](https://github.com/MorpheusXAUT/slotlist-frontend/releases).
@@ -73,4 +73,4 @@ slotlist-frontend uses [Semantic Versioning](https://semver.org/) for releases, 
 [MIT](https://choosealicense.com/licenses/mit/)
 
 ## See Also
-[slotlist-backend](https://github.com/MorpheusXAUT/slotlist-backend), the backend portion of [slotlist.info](https://slotlist.info), written in TypeScript
+[slotlist-backend](https://github.com/MorpheusXAUT/slotlist-backend), the backend portion of [slotlist.online](https://slotlist.online), written in TypeScript

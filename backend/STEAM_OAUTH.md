@@ -33,7 +33,7 @@ Retrieves the Steam OpenID URL to redirect the user to for authentication.
 
 **Example Request:**
 ```bash
-curl -X GET "https://api.slotlist.info/api/v1/auth/steam?return_url=https://slotlist.info/auth/callback"
+curl -X GET "https://api.slotlist.online/api/v1/auth/steam?return_url=https://slotlist.online/auth/callback"
 ```
 
 **Example Response:**
@@ -65,15 +65,15 @@ Verifies the Steam OpenID response and returns a JWT token.
 **Request Body:**
 ```json
 {
-  "url": "https://slotlist.info/auth/callback?openid.ns=http://specs.openid.net/auth/2.0&openid.mode=id_res&..."
+  "url": "https://slotlist.online/auth/callback?openid.ns=http://specs.openid.net/auth/2.0&openid.mode=id_res&..."
 }
 ```
 
 **Example Request:**
 ```bash
-curl -X POST "https://api.slotlist.info/api/v1/auth/steam" \
+curl -X POST "https://api.slotlist.online/api/v1/auth/steam" \
   -H "Content-Type: application/json" \
-  -d '{"url": "https://slotlist.info/auth/callback?openid.ns=..."}'
+  -d '{"url": "https://slotlist.online/auth/callback?openid.ns=..."}'
 ```
 
 **Example Response:**
@@ -137,7 +137,7 @@ Authorization: Bearer <JWT_TOKEN>
 
 **Example Request:**
 ```bash
-curl -X POST "https://api.slotlist.info/api/v1/auth/refresh" \
+curl -X POST "https://api.slotlist.online/api/v1/auth/refresh" \
   -H "Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGc..."
 ```
 
@@ -172,8 +172,8 @@ Add the following to your `.env` file:
 CONFIG_STEAM_API_SECRET=your-steam-api-key-here
 
 # JWT Configuration (used for OpenID realm)
-CONFIG_JWT_ISSUER=https://slotlist.info
-CONFIG_JWT_AUDIENCE=https://slotlist.info
+CONFIG_JWT_ISSUER=https://slotlist.online
+CONFIG_JWT_AUDIENCE=https://slotlist.online
 ```
 
 ### Getting a Steam API Key

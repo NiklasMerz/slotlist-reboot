@@ -11,8 +11,8 @@ base.plugins.push(
   new webpack.DefinePlugin({
     'process.env': {
       NODE_ENV: JSON.stringify('development'),
-      BASE_URL: JSON.stringify('https://slotlist.info'),
-      BASE_API_URL: JSON.stringify('https://api.slotlist.info'),
+      BASE_URL: JSON.stringify('https://slotlist.online'),
+      BASE_API_URL: JSON.stringify('https://api.slotlist.online'),
       MOCK_AXIOS_RESPONSES: JSON.stringify(process.env.MOCK_AXIOS_RESPONSES === 'true'),
       FRONTEND_VERSION: JSON.stringify(require('../package.json').version)
     }

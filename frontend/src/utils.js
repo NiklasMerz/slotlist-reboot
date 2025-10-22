@@ -16,10 +16,10 @@ slugger.defaults.mode = 'custom'
 
 export default {
   clearTitle() {
-    document.title = `slotlist.info - ${i18n.t('title.browser')}`
+    document.title = `slotlist.online - ${i18n.t('title.browser')}`
   },
   setTitle(suffix) {
-    document.title = `slotlist.info - ${suffix}`
+    document.title = `slotlist.online - ${suffix}`
   },
   slug(val) {
     return slugger(val)

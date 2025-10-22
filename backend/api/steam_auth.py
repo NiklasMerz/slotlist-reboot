@@ -59,23 +59,33 @@ class SteamOpenIDService:
         # Parse the OpenID response from URL parameters
         params = self._parse_openid_params(openid_url)
         
+        # Debug logging
+        print(f"Parsed OpenID params: {list(params.keys())}")
+        print(f"Has claimed_id: {'openid.claimed_id' in params}")
+        
         # Steam uses stateless mode, so we verify directly without association
         # Check required OpenID parameters
         if 'openid.claimed_id' not in params:
+            print(f"Missing openid.claimed_id in params")
             return None
             
         # Verify the response with Steam
         if not self._verify_openid_response(params):
+            print(f"OpenID verification failed with Steam")
             return None
         
         # Extract Steam ID from claimed identifier
         # Format: https://steamcommunity.com/openid/id/<STEAM_ID>
         claimed_id = params.get('openid.claimed_id', '')
+        print(f"Claimed ID: {claimed_id}")
         steam_id_match = re.match(r'https?://steamcommunity\.com/openid/id/(\d+)', claimed_id)
         
         if steam_id_match:
-            return steam_id_match.group(1)
+            steam_id = steam_id_match.group(1)
+            print(f"Extracted Steam ID: {steam_id}")
+            return steam_id
         
+        print(f"Could not extract Steam ID from claimed_id")
         return None
     
     def _verify_openid_response(self, params: Dict[str, str]) -> bool:
@@ -93,12 +103,16 @@ class SteamOpenIDService:
         verify_params['openid.mode'] = 'check_authentication'
         
         try:
+            print(f"Verifying with Steam: {self.STEAM_OPENID_URL}")
             response = requests.post(self.STEAM_OPENID_URL, data=verify_params, timeout=10)
             response.raise_for_status()
             
             # Check if Steam confirms the authentication
             content = response.text
-            return 'is_valid:true' in content
+            print(f"Steam verification response: {content[:200]}")
+            is_valid = 'is_valid:true' in content
+            print(f"Verification result: {is_valid}")
+            return is_valid
         except Exception as e:
             print(f"OpenID verification failed: {e}")
             return False

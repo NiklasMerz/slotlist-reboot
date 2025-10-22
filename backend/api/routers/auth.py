@@ -101,6 +101,9 @@ def verify_steam_login(request, payload: SteamLoginSchema):
     # Extract return URL from the openid response
     return_url = request.GET.get('return_url', settings.JWT_ISSUER)
     
+    print(f"Received URL from frontend: {payload.url[:200]}...")
+    print(f"Return URL: {return_url}")
+    
     # Verify Steam login and get Steam ID
     steam_id = steam_service.verify_and_get_steam_id(payload.url, return_url)
     
@@ -110,14 +113,17 @@ def verify_steam_login(request, payload: SteamLoginSchema):
     # Get or create user
     try:
         user = User.objects.get(steam_id=steam_id)
+        print(f"Found existing user: {user.nickname} ({user.uid})")
         
         # Check if user is active
         if not user.active:
             return 403, {'detail': 'User account is deactivated'}
             
     except User.DoesNotExist:
+        print(f"Creating new user for Steam ID: {steam_id}")
         # Get user info from Steam API
         steam_info = steam_service.get_steam_user_info(steam_id)
+        print(f"Steam info: {steam_info}")
         
         # Create new user
         user = User.objects.create(
@@ -125,6 +131,7 @@ def verify_steam_login(request, payload: SteamLoginSchema):
             nickname=steam_info['nickname'],
             active=True
         )
+        print(f"Created new user: {user.nickname} ({user.uid})")
     
     # Generate JWT
     token = generate_jwt(user)

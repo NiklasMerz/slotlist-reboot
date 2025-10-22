@@ -35,6 +35,17 @@ def list_notifications(request, limit: int = 25, offset: int = 0, unread_only: b
     ]
 
 
+@router.get('/unseen')
+def get_unseen_count(request):
+    """Get count of unseen notifications for the authenticated user"""
+    user_uid = request.auth.get('user', {}).get('uid')
+    user = get_object_or_404(User, uid=user_uid)
+    
+    count = Notification.objects.filter(user=user, read=False).count()
+    
+    return {'count': count}
+
+
 @router.get('/{notification_uid}', response=NotificationSchema)
 def get_notification(request, notification_uid: UUID):
     """Get a single notification"""

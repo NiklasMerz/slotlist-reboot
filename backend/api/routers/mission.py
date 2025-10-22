@@ -29,7 +29,10 @@ def list_missions(request, limit: int = 25, offset: int = 0, includeEnded: bool 
     query = Mission.objects.select_related('creator', 'community').all()
     
     # Date range filtering for calendar
-    if startDate and endDate:
+    # When startDate and endDate are provided (calendar view), return just array
+    is_calendar_query = startDate is not None and endDate is not None
+    
+    if is_calendar_query:
         from datetime import datetime as dt, timezone
         start_dt = dt.fromtimestamp(startDate / 1000, tz=timezone.utc)
         end_dt = dt.fromtimestamp(endDate / 1000, tz=timezone.utc)
@@ -114,6 +117,10 @@ def list_missions(request, limit: int = 25, offset: int = 0, includeEnded: bool 
                 'logoUrl': mission.community.logo_url,
             } if mission.community else None
         })
+    
+    # Calendar queries return just the array for backwards compatibility
+    if is_calendar_query:
+        return result_missions
     
     return {
         'missions': result_missions,

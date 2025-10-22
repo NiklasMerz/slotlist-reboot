@@ -5,7 +5,8 @@ export const v1 = {
     return axios.post('/v1/auth/account/delete', { nickname })
   },
   getLoginRedirectUrl() {
-    return axios.get('/v1/auth/steam')
+    const returnUrl = `${window.location.origin}/login`
+    return axios.get('/v1/auth/steam', { params: { return_url: returnUrl } })
   },
   performLogin(url) {
     return axios.post('/v1/auth/steam', { url })

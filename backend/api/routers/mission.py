@@ -61,12 +61,12 @@ def list_missions(request, limit: int = 25, offset: int = 0, include_ended: bool
     return result
 
 
-@router.get('/{slug}', response=MissionSchema, auth=None)
+@router.get('/{slug}', auth=None)
 def get_mission(request, slug: str):
     """Get a single mission by slug"""
     mission = get_object_or_404(Mission.objects.select_related('creator', 'community'), slug=slug)
     
-    return {
+    mission_data = {
         'uid': mission.uid,
         'slug': mission.slug,
         'title': mission.title,
@@ -105,6 +105,8 @@ def get_mission(request, slug: str):
             'repositories': mission.community.repositories
         } if mission.community else None
     }
+    
+    return {'mission': mission_data}
 
 
 @router.post('/', response=MissionSchema)
@@ -340,4 +342,4 @@ def get_mission_slots(request, slug: str):
         }
         result.append(group_data)
     
-    return result
+    return {'slotGroups': result}

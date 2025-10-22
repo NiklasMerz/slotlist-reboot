@@ -9,9 +9,26 @@ class JWTAuth(HttpBearer):
     """JWT Authentication for Django Ninja"""
     
     def authenticate(self, request: HttpRequest, token: str) -> Optional[dict]:
+        """
+        Authenticate the request using JWT token.
+        Supports both 'Bearer <token>' and 'JWT <token>' formats.
+        """
+        # The token parameter already has the 'Bearer ' prefix stripped by HttpBearer
+        # But if the client sent 'JWT <token>', we need to handle that
+        auth_header = request.headers.get('Authorization', '')
+        
+        # Extract token from header, supporting both JWT and Bearer prefixes
+        if auth_header.startswith('JWT '):
+            token = auth_header[4:]  # Remove 'JWT ' prefix
+        elif auth_header.startswith('Bearer '):
+            token = auth_header[7:]  # Remove 'Bearer ' prefix
+        
+        # Decode and verify the token
         payload = decode_jwt(token)
         if payload:
             return payload
+        
+        print(f"JWT authentication failed for token: {token[:50]}...")
         return None
 
 

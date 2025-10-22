@@ -17,11 +17,41 @@ class MissionSlotTemplateCreateSchema(Schema):
 @router.get('/', auth=None)
 def list_mission_slot_templates(request, limit: int = 25, offset: int = 0):
     """List all mission slot templates with pagination"""
+    total = MissionSlotTemplate.objects.count()
     templates = MissionSlotTemplate.objects.select_related('creator', 'community').all()[offset:offset + limit]
     
-    result = []
-    for template in templates:
-        result.append({
+    return {
+        'slotTemplates': [
+            {
+                'uid': str(template.uid),
+                'title': template.title,
+                'slotGroups': template.slot_groups,
+                'creator': {
+                    'uid': str(template.creator.uid),
+                    'nickname': template.creator.nickname,
+                },
+                'community': {
+                    'uid': str(template.community.uid),
+                    'name': template.community.name,
+                    'tag': template.community.tag,
+                    'slug': template.community.slug,
+                } if template.community else None,
+                'createdAt': template.created_at.isoformat() if template.created_at else None,
+                'updatedAt': template.updated_at.isoformat() if template.updated_at else None,
+            }
+            for template in templates
+        ],
+        'total': total
+    }
+
+
+@router.get('/{uid}', auth=None)
+def get_mission_slot_template(request, uid: UUID):
+    """Get a single mission slot template by UID"""
+    template = get_object_or_404(MissionSlotTemplate.objects.select_related('creator', 'community'), uid=uid)
+    
+    return {
+        'slotTemplate': {
             'uid': str(template.uid),
             'title': template.title,
             'slotGroups': template.slot_groups,
@@ -37,32 +67,7 @@ def list_mission_slot_templates(request, limit: int = 25, offset: int = 0):
             } if template.community else None,
             'createdAt': template.created_at.isoformat() if template.created_at else None,
             'updatedAt': template.updated_at.isoformat() if template.updated_at else None,
-        })
-    
-    return result
-
-
-@router.get('/{uid}', auth=None)
-def get_mission_slot_template(request, uid: UUID):
-    """Get a single mission slot template by UID"""
-    template = get_object_or_404(MissionSlotTemplate.objects.select_related('creator', 'community'), uid=uid)
-    
-    return {
-        'uid': str(template.uid),
-        'title': template.title,
-        'slotGroups': template.slot_groups,
-        'creator': {
-            'uid': str(template.creator.uid),
-            'nickname': template.creator.nickname,
-        },
-        'community': {
-            'uid': str(template.community.uid),
-            'name': template.community.name,
-            'tag': template.community.tag,
-            'slug': template.community.slug,
-        } if template.community else None,
-        'createdAt': template.created_at.isoformat() if template.created_at else None,
-        'updatedAt': template.updated_at.isoformat() if template.updated_at else None,
+        }
     }
 
 
@@ -84,21 +89,23 @@ def create_mission_slot_template(request, payload: MissionSlotTemplateCreateSche
     )
     
     return {
-        'uid': str(template.uid),
-        'title': template.title,
-        'slotGroups': template.slot_groups,
-        'creator': {
-            'uid': str(template.creator.uid),
-            'nickname': template.creator.nickname,
-        },
-        'community': {
-            'uid': str(template.community.uid),
-            'name': template.community.name,
-            'tag': template.community.tag,
-            'slug': template.community.slug,
-        } if template.community else None,
-        'createdAt': template.created_at.isoformat() if template.created_at else None,
-        'updatedAt': template.updated_at.isoformat() if template.updated_at else None,
+        'slotTemplate': {
+            'uid': str(template.uid),
+            'title': template.title,
+            'slotGroups': template.slot_groups,
+            'creator': {
+                'uid': str(template.creator.uid),
+                'nickname': template.creator.nickname,
+            },
+            'community': {
+                'uid': str(template.community.uid),
+                'name': template.community.name,
+                'tag': template.community.tag,
+                'slug': template.community.slug,
+            } if template.community else None,
+            'createdAt': template.created_at.isoformat() if template.created_at else None,
+            'updatedAt': template.updated_at.isoformat() if template.updated_at else None,
+        }
     }
 
 

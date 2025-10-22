@@ -24,11 +24,12 @@ api = NinjaAPI(
 )
 
 # Import routers after API is created to avoid circular imports
-from api.routers import auth, mission, user, community, status, notification
+from api.routers import auth, mission, user, community, status, notification, mission_slot_template
 
 # Register routers
 api.add_router('/v1/auth/', auth.router, tags=['Authentication'], auth=None)
 api.add_router('/v1/missions/', mission.router, tags=['Missions'])
+api.add_router('/v1/missionSlotTemplates/', mission_slot_template.router, tags=['Mission Slot Templates'])
 api.add_router('/v1/users/', user.router, tags=['Users'])
 api.add_router('/v1/communities/', community.router, tags=['Communities'])
 api.add_router('/v1/notifications/', notification.router, tags=['Notifications'])

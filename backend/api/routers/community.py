@@ -10,45 +10,80 @@ from api.auth import has_permission
 router = Router()
 
 
-@router.get('/', response=List[CommunitySchema], auth=None)
+@router.get('/', auth=None)
 def list_communities(request, limit: int = 25, offset: int = 0):
     """List all communities with pagination"""
+    total = Community.objects.count()
     communities = Community.objects.all()[offset:offset + limit]
-    return [
-        {
+    return {
+        'communities': [
+            {
+                'uid': community.uid,
+                'name': community.name,
+                'tag': community.tag,
+                'slug': community.slug,
+                'website': community.website,
+                'logoUrl': community.logo_url,
+                'gameServers': community.game_servers,
+                'voiceComms': community.voice_comms,
+                'repositories': community.repositories
+            }
+            for community in communities
+        ],
+        'total': total
+    }
+
+
+@router.get('/{slug}', auth=None)
+def get_community(request, slug: str):
+    """Get a single community by slug"""
+    community = get_object_or_404(Community, slug=slug)
+    
+    # Get members and leaders
+    from api.models import User, Permission
+    
+    members = []
+    leaders = []
+    
+    # Get all users in this community
+    community_users = User.objects.filter(community=community).select_related('community')
+    
+    for user in community_users:
+        user_data = {
+            'uid': user.uid,
+            'nickname': user.nickname,
+            'steamId': user.steam_id,
+        }
+        
+        # Check if user is a leader (has community.{slug}.leader permission)
+        is_leader = Permission.objects.filter(
+            user=user,
+            permission=f'community.{slug}.leader'
+        ).exists()
+        
+        if is_leader:
+            leaders.append(user_data)
+        else:
+            members.append(user_data)
+    
+    return {
+        'community': {
             'uid': community.uid,
             'name': community.name,
             'tag': community.tag,
             'slug': community.slug,
             'website': community.website,
-            'image_url': community.image_url,
-            'game_servers': community.game_servers,
-            'voice_comms': community.voice_comms,
-            'repositories': community.repositories
+            'logoUrl': community.logo_url,
+            'gameServers': community.game_servers,
+            'voiceComms': community.voice_comms,
+            'repositories': community.repositories,
+            'members': members,
+            'leaders': leaders
         }
-        for community in communities
-    ]
-
-
-@router.get('/{slug}', response=CommunitySchema, auth=None)
-def get_community(request, slug: str):
-    """Get a single community by slug"""
-    community = get_object_or_404(Community, slug=slug)
-    
-    return {
-        'uid': community.uid,
-        'name': community.name,
-        'tag': community.tag,
-        'slug': community.slug,
-        'website': community.website,
-        'image_url': community.image_url,
-        'game_servers': community.game_servers,
-        'voice_comms': community.voice_comms,
-        'repositories': community.repositories
     }
 
 
-@router.post('/', response=CommunitySchema)
+@router.post('/')
 def create_community(request, payload: CommunityCreateSchema):
     """Create a new community"""
     permissions = request.auth.get('permissions', [])
@@ -69,19 +104,23 @@ def create_community(request, payload: CommunityCreateSchema):
     )
     
     return {
-        'uid': community.uid,
-        'name': community.name,
-        'tag': community.tag,
-        'slug': community.slug,
-        'website': community.website,
-        'image_url': community.image_url,
-        'game_servers': community.game_servers,
-        'voice_comms': community.voice_comms,
-        'repositories': community.repositories
+        'community': {
+            'uid': community.uid,
+            'name': community.name,
+            'tag': community.tag,
+            'slug': community.slug,
+            'website': community.website,
+            'logoUrl': community.logo_url,
+            'gameServers': community.game_servers,
+            'voiceComms': community.voice_comms,
+            'repositories': community.repositories,
+            'members': [],
+            'leaders': []
+        }
     }
 
 
-@router.patch('/{slug}', response=CommunitySchema)
+@router.patch('/{slug}')
 def update_community(request, slug: str, payload: CommunityUpdateSchema):
     """Update a community"""
     permissions = request.auth.get('permissions', [])
@@ -105,16 +144,45 @@ def update_community(request, slug: str, payload: CommunityUpdateSchema):
     
     community.save()
     
+    # Get members and leaders for updated response
+    from api.models import User, Permission
+    
+    members = []
+    leaders = []
+    
+    community_users = User.objects.filter(community=community).select_related('community')
+    
+    for user in community_users:
+        user_data = {
+            'uid': user.uid,
+            'nickname': user.nickname,
+            'steamId': user.steam_id,
+        }
+        
+        is_leader = Permission.objects.filter(
+            user=user,
+            permission=f'community.{slug}.leader'
+        ).exists()
+        
+        if is_leader:
+            leaders.append(user_data)
+        else:
+            members.append(user_data)
+    
     return {
-        'uid': community.uid,
-        'name': community.name,
-        'tag': community.tag,
-        'slug': community.slug,
-        'website': community.website,
-        'image_url': community.image_url,
-        'game_servers': community.game_servers,
-        'voice_comms': community.voice_comms,
-        'repositories': community.repositories
+        'community': {
+            'uid': community.uid,
+            'name': community.name,
+            'tag': community.tag,
+            'slug': community.slug,
+            'website': community.website,
+            'logoUrl': community.logo_url,
+            'gameServers': community.game_servers,
+            'voiceComms': community.voice_comms,
+            'repositories': community.repositories,
+            'members': members,
+            'leaders': leaders
+        }
     }
 
 
@@ -129,3 +197,101 @@ def delete_community(request, slug: str):
     community.delete()
     
     return {'success': True}
+
+
+@router.get('/{slug}/missions', auth=None)
+def get_community_missions(request, slug: str, limit: int = 10, offset: int = 0, includeEnded: bool = False):
+    """Get missions for a community"""
+    from api.models import Mission
+    from datetime import datetime
+    
+    community = get_object_or_404(Community, slug=slug)
+    
+    # Filter missions by community
+    missions_query = Mission.objects.filter(community=community)
+    
+    # Filter out ended missions unless includeEnded is True
+    if not includeEnded:
+        missions_query = missions_query.filter(end_time__gt=datetime.now())
+    
+    total = missions_query.count()
+    missions = missions_query.select_related('creator', 'community')[offset:offset + limit]
+    
+    return {
+        'missions': [
+            {
+                'uid': mission.uid,
+                'slug': mission.slug,
+                'title': mission.title,
+                'briefingTime': mission.briefing_time.isoformat() if mission.briefing_time else None,
+                'slottingTime': mission.slotting_time.isoformat() if mission.slotting_time else None,
+                'startTime': mission.start_time.isoformat() if mission.start_time else None,
+                'endTime': mission.end_time.isoformat() if mission.end_time else None,
+                'visibility': mission.visibility,
+                'creator': {
+                    'uid': mission.creator.uid,
+                    'nickname': mission.creator.nickname,
+                } if mission.creator else None,
+                'community': {
+                    'uid': mission.community.uid,
+                    'name': mission.community.name,
+                    'tag': mission.community.tag,
+                    'slug': mission.community.slug,
+                } if mission.community else None,
+            }
+            for mission in missions
+        ],
+        'total': total
+    }
+
+
+@router.get('/{slug}/permissions', auth=None)
+def get_community_permissions(request, slug: str, limit: int = 10, offset: int = 0):
+    """Get permissions for a community"""
+    from api.models import Permission, User
+    
+    community = get_object_or_404(Community, slug=slug)
+    
+    # Get all permissions for users in this community
+    permissions_query = Permission.objects.filter(
+        user__community=community
+    ).select_related('user')
+    
+    total = permissions_query.count()
+    permissions = permissions_query[offset:offset + limit]
+    
+    return {
+        'permissions': [
+            {
+                'uid': perm.uid,
+                'permission': perm.permission,
+                'user': {
+                    'uid': perm.user.uid,
+                    'nickname': perm.user.nickname,
+                }
+            }
+            for perm in permissions
+        ],
+        'total': total
+    }
+
+
+@router.get('/{slug}/repositories', auth=None)
+def get_community_repositories(request, slug: str):
+    """Get repositories for a community"""
+    community = get_object_or_404(Community, slug=slug)
+    
+    return {
+        'repositories': community.repositories or []
+    }
+
+
+@router.get('/{slug}/servers', auth=None)
+def get_community_servers(request, slug: str):
+    """Get servers for a community"""
+    community = get_object_or_404(Community, slug=slug)
+    
+    return {
+        'gameServers': community.game_servers or [],
+        'voiceComms': community.voice_comms or []
+    }

@@ -4,11 +4,23 @@ from typing import List
 from uuid import UUID
 from datetime import datetime
 from django.utils.text import slugify
-from api.models import Mission, Community, User, MissionSlotGroup, MissionSlot
+from api.models import Mission, Community, User, MissionSlotGroup, MissionSlot, ArmaThreeDLC
 from api.schemas import MissionSchema, MissionCreateSchema, MissionUpdateSchema
 from api.auth import has_permission
 
 router = Router()
+
+
+def validate_dlc_list(dlc_list, field_name='required_dlcs'):
+    """Validate a DLC list and raise error if invalid."""
+    # Allow None or empty list
+    if not dlc_list:
+        return
+    
+    if not ArmaThreeDLC.validate_dlc_list(dlc_list):
+        invalid_dlcs = [dlc for dlc in dlc_list if dlc not in ArmaThreeDLC.get_valid_dlcs()]
+        from ninja.errors import HttpError
+        raise HttpError(400, f'Invalid {field_name}: {", ".join(invalid_dlcs)}. Valid options: {", ".join(ArmaThreeDLC.get_valid_dlcs())}')
 
 
 @router.get('/', auth=None)
@@ -115,6 +127,9 @@ def create_mission(request, payload: MissionCreateSchema):
     user_uid = request.auth.get('user', {}).get('uid')
     user = get_object_or_404(User, uid=user_uid)
     
+    # Validate DLCs
+    validate_dlc_list(payload.details_required_dlcs, 'details_required_dlcs')
+    
     # Get community if specified
     community = None
     if payload.community_uid:
@@ -200,6 +215,10 @@ def update_mission(request, slug: str, payload: MissionUpdateSchema):
     
     if not is_creator and not is_admin:
         return 403, {'detail': 'Forbidden'}
+    
+    # Validate DLCs if provided
+    if payload.details_required_dlcs is not None:
+        validate_dlc_list(payload.details_required_dlcs, 'details_required_dlcs')
     
     # Update fields
     if payload.title is not None:

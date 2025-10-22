@@ -8,6 +8,61 @@ from django.db import models
 # original TypeScript/Sequelize backend using db_column mappings for compatibility.
 
 
+class ArmaThreeDLC(models.TextChoices):
+    """
+    ArmA 3 DLC options.
+    
+    Includes both official Bohemia Interactive DLCs and Creator DLCs.
+    These values are stored in JSON arrays in the database for compatibility
+    with the original TypeScript backend.
+    """
+    # Official DLCs
+    APEX = 'apex', 'Apex'
+    CONTACT = 'contact', 'Contact'
+    HELICOPTERS = 'helicopters', 'Helicopters'
+    JETS = 'jets', 'Jets'
+    KARTS = 'karts', 'Karts'
+    LAWS_OF_WAR = 'lawsofwar', 'Laws of War'
+    MARKSMEN = 'marksmen', 'Marksmen'
+    TANKS = 'tanks', 'Tanks'
+    TAC_OPS = 'tacops', 'Tac-Ops Mission Pack'
+    
+    # Creator DLCs
+    GLOBAL_MOBILIZATION = 'gm', 'Global Mobilization - Cold War Germany'
+    CSLA = 'csla', 'CSLA Iron Curtain'
+    PRAIRIE_FIRE = 'vn', 'S.O.G. Prairie Fire'
+    SPEARHEAD_1944 = 'spe', 'Spearhead 1944'
+    WESTERN_SAHARA = 'ws', 'Western Sahara'
+    REACTION_FORCES = 'rf', 'Reaction Forces'
+    EXPEDITIONARY_FORCES = 'ef', 'Expeditionary Forces'
+    ART_OF_WAR = 'aow', 'Art of War'
+    
+    @classmethod
+    def validate_dlc_list(cls, dlc_list):
+        """
+        Validate that all items in a DLC list are valid DLC identifiers.
+        
+        Empty lists are considered valid (no DLCs required).
+        
+        Args:
+            dlc_list: List of DLC strings to validate
+            
+        Returns:
+            bool: True if all DLCs are valid or list is empty, False otherwise
+        """
+        if not isinstance(dlc_list, list):
+            return False
+        if len(dlc_list) == 0:
+            return True
+        valid_dlcs = {choice.value for choice in cls}
+        return all(dlc in valid_dlcs for dlc in dlc_list)
+    
+    @classmethod
+    def get_valid_dlcs(cls):
+        """Get list of all valid DLC identifiers."""
+        return [choice.value for choice in cls]
+
+
 class Community(models.Model):
     """Represents a community/organization in the system"""
     uid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -138,7 +193,7 @@ class Mission(models.Model):
     rules = models.TextField(null=True, blank=True)
     details_map = models.CharField(max_length=255, null=True, blank=True, db_column='detailsMap')
     details_game_mode = models.CharField(max_length=255, null=True, blank=True, db_column='detailsGameMode')
-    required_dlcs = models.JSONField(default=list, db_column='requiredDLCs')
+    required_dlcs = models.JSONField(default=list, blank=True, db_column='requiredDLCs')
     banner_image_url = models.URLField(max_length=500, null=True, blank=True, db_column='bannerImageUrl')
     game_server = models.JSONField(null=True, blank=True, db_column='gameServer')
     voice_comms = models.JSONField(null=True, blank=True, db_column='voiceComms')
@@ -162,6 +217,21 @@ class Mission(models.Model):
 
     def __str__(self):
         return self.title
+    
+    def clean(self):
+        """Validate required_dlcs contains only valid DLC identifiers."""
+        from django.core.exceptions import ValidationError
+        
+        # Allow None or empty list
+        if not self.required_dlcs:
+            return
+        
+        # Validate the list
+        if not ArmaThreeDLC.validate_dlc_list(self.required_dlcs):
+            invalid_dlcs = [dlc for dlc in self.required_dlcs if dlc not in ArmaThreeDLC.get_valid_dlcs()]
+            raise ValidationError({
+                'required_dlcs': f'Invalid DLC(s): {", ".join(invalid_dlcs)}. Valid options: {", ".join(ArmaThreeDLC.get_valid_dlcs())}'
+            })
 
 
 class MissionSlotGroup(models.Model):
@@ -190,7 +260,7 @@ class MissionSlot(models.Model):
     description = models.TextField(null=True, blank=True)
     detailed_description = models.TextField(null=True, blank=True, db_column='detailedDescription')
     order_number = models.IntegerField(default=0, db_column='orderNumber')
-    required_dlcs = models.JSONField(default=list, db_column='requiredDLCs')
+    required_dlcs = models.JSONField(default=list, blank=True, db_column='requiredDLCs')
     external_assignee = models.CharField(max_length=255, null=True, blank=True, db_column='externalAssignee')
     slot_group = models.ForeignKey(MissionSlotGroup, on_delete=models.CASCADE, related_name='slots', db_column='slotGroupUid')
     assignee = models.ForeignKey(
@@ -222,6 +292,21 @@ class MissionSlot(models.Model):
 
     def __str__(self):
         return f"{self.slot_group.title}: {self.title}"
+    
+    def clean(self):
+        """Validate required_dlcs contains only valid DLC identifiers."""
+        from django.core.exceptions import ValidationError
+        
+        # Allow None or empty list
+        if not self.required_dlcs:
+            return
+        
+        # Validate the list
+        if not ArmaThreeDLC.validate_dlc_list(self.required_dlcs):
+            invalid_dlcs = [dlc for dlc in self.required_dlcs if dlc not in ArmaThreeDLC.get_valid_dlcs()]
+            raise ValidationError({
+                'required_dlcs': f'Invalid DLC(s): {", ".join(invalid_dlcs)}. Valid options: {", ".join(ArmaThreeDLC.get_valid_dlcs())}'
+            })
 
 
 class MissionSlotRegistration(models.Model):

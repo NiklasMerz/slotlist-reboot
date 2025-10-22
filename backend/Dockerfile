@@ -25,5 +25,8 @@ RUN ls
 # Collect static files
 RUN python manage.py collectstatic --noinput || true
 
+# Expose port
+EXPOSE 8022
+
 # Start server (no migrations needed - models are unmanaged)
-CMD ["gunicorn", "slotlist_backend.wsgi:application", "--bind", "0.0.0.0:8000"]
+CMD ["gunicorn", "slotlist_backend.wsgi:application", "--bind", "0.0.0.0:8022"]

@@ -26,7 +26,7 @@ services:
     volumes:
       - ./backend:/app
     ports:
-      - "8000:8000"
+      - "8022:8022"
     environment:
       - DEBUG=True
       - DB_DATABASE=slotlist
@@ -35,8 +35,8 @@ services:
       - DB_HOST=db
       - DB_PORT=5432
       - CONFIG_JWT_SECRET=development-secret-key-change-in-production
-      - CONFIG_JWT_ISSUER=http://localhost:8000
-      - CONFIG_JWT_AUDIENCE=http://localhost:8000
+      - CONFIG_JWT_ISSUER=http://localhost:8022
+      - CONFIG_JWT_AUDIENCE=http://localhost:8022
       - DJANGO_SECRET_KEY=development-django-secret-change-in-production
       - ALLOWED_HOSTS=*
       - CORS_ALLOW_ALL_ORIGINS=True
@@ -48,10 +48,10 @@ services:
     command: >
       sh -c "
         python manage.py check &&
-        python manage.py runserver 0.0.0.0:8000
+        python manage.py runserver 0.0.0.0:8022
       "
     healthcheck:
-      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/api/v1/status')"]
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8022/api/v1/status')"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -70,7 +70,7 @@ services:
       - "3000:3000"
     environment:
       - NODE_ENV=development
-      - BACKEND_URL=http://backend:8001
+      - BACKEND_URL=http://backend:8022
     depends_on:
       backend:
         condition: service_healthy

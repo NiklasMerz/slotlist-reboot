@@ -24,7 +24,7 @@ def validate_dlc_list(dlc_list, field_name='required_dlcs'):
 
 
 @router.get('/', auth=None)
-def list_missions(request, limit: int = 25, offset: int = 0, include_ended: bool = False, startDate: int = None, endDate: int = None):
+def list_missions(request, limit: int = 25, offset: int = 0, includeEnded: bool = False, startDate: int = None, endDate: int = None):
     """List all missions with pagination"""
     query = Mission.objects.select_related('creator', 'community').all()
     
@@ -34,31 +34,76 @@ def list_missions(request, limit: int = 25, offset: int = 0, include_ended: bool
         start_dt = dt.fromtimestamp(startDate / 1000, tz=timezone.utc)
         end_dt = dt.fromtimestamp(endDate / 1000, tz=timezone.utc)
         query = query.filter(start_time__gte=start_dt, start_time__lte=end_dt)
-    elif not include_ended:
+    elif not includeEnded:
         query = query.filter(end_time__gte=datetime.utcnow()) | query.filter(end_time__isnull=True)
     
-    missions = query[offset:offset + limit]
+    # Get total count before applying pagination
+    total = query.count()
     
-    result = []
+    # Apply pagination
+    missions = query.order_by('-start_time')[offset:offset + limit]
+    
+    # Get current user if authenticated
+    current_user_uid = None
+    if hasattr(request, 'auth') and request.auth:
+        current_user_uid = request.auth.get('user', {}).get('uid')
+    
+    # Calculate slot counts for each mission
+    result_missions = []
     for mission in missions:
-        result.append({
+        # Get all slots for this mission
+        from django.db.models import Count, Q
+        slots = MissionSlot.objects.filter(slot_group__mission=mission)
+        
+        total_slots = slots.count()
+        assigned_slots = slots.filter(assignee__isnull=False).count()
+        external_slots = slots.filter(external_assignee__isnull=False).exclude(external_assignee='').count()
+        unassigned_slots = slots.filter(assignee__isnull=True, external_assignee__isnull=True).count() + \
+                          slots.filter(assignee__isnull=True, external_assignee='').count()
+        
+        # Open slots are those without assignee, external_assignee, and no restricted community
+        open_slots = slots.filter(
+            assignee__isnull=True,
+            restricted_community__isnull=True
+        ).filter(
+            Q(external_assignee__isnull=True) | Q(external_assignee='')
+        ).count()
+        
+        # Check if current user is assigned to any slot
+        is_assigned_to_any_slot = False
+        is_registered_for_any_slot = False
+        if current_user_uid:
+            is_assigned_to_any_slot = slots.filter(assignee__uid=current_user_uid).exists()
+            # Registration status would need to check a separate registration table if it exists
+            # For now, keeping it as False
+        
+        result_missions.append({
             'uid': str(mission.uid),
             'slug': mission.slug,
             'title': mission.title,
             'description': mission.description,
-            'briefing_time': mission.briefing_time.isoformat() if mission.briefing_time else None,
-            'slotting_time': mission.slotting_time.isoformat() if mission.slotting_time else None,
-            'start_time': mission.start_time.isoformat() if mission.start_time else None,
-            'end_time': mission.end_time.isoformat() if mission.end_time else None,
+            'briefingTime': mission.briefing_time.isoformat() if mission.briefing_time else None,
+            'slottingTime': mission.slotting_time.isoformat() if mission.slotting_time else None,
+            'startTime': mission.start_time.isoformat() if mission.start_time else None,
+            'endTime': mission.end_time.isoformat() if mission.end_time else None,
             'visibility': mission.visibility,
-            'details_map': mission.details_map,
-            'details_game_mode': mission.details_game_mode,
-            'required_dlcs': mission.required_dlcs,
-            'banner_image_url': mission.banner_image_url,
+            'detailsMap': mission.details_map,
+            'detailsGameMode': mission.details_game_mode,
+            'requiredDLCs': mission.required_dlcs,
+            'bannerImageUrl': mission.banner_image_url,
+            'slotCounts': {
+                'total': total_slots,
+                'assigned': assigned_slots,
+                'external': external_slots,
+                'unassigned': unassigned_slots,
+                'open': open_slots
+            },
+            'isAssignedToAnySlot': is_assigned_to_any_slot,
+            'isRegisteredForAnySlot': is_registered_for_any_slot,
             'creator': {
                 'uid': str(mission.creator.uid),
                 'nickname': mission.creator.nickname,
-                'steam_id': mission.creator.steam_id,
+                'steamId': mission.creator.steam_id,
             },
             'community': {
                 'uid': str(mission.community.uid),
@@ -66,11 +111,14 @@ def list_missions(request, limit: int = 25, offset: int = 0, include_ended: bool
                 'tag': mission.community.tag,
                 'slug': mission.community.slug,
                 'website': mission.community.website,
-                'logo_url': mission.community.logo_url,
+                'logoUrl': mission.community.logo_url,
             } if mission.community else None
         })
     
-    return result
+    return {
+        'missions': result_missions,
+        'total': total
+    }
 
 
 @router.get('/{slug}', auth=None)
@@ -83,27 +131,25 @@ def get_mission(request, slug: str):
         'slug': mission.slug,
         'title': mission.title,
         'description': mission.description,
-        'briefing_time': mission.briefing_time,
-        'slot_list_time': mission.slotting_time,
-        'start_time': mission.start_time,
-        'end_time': mission.end_time,
+        'briefingTime': mission.briefing_time,
+        'slottingTime': mission.slotting_time,
+        'startTime': mission.start_time,
+        'endTime': mission.end_time,
         'visibility': mission.visibility,
-        'tech_teleport': bool(mission.tech_support and 'teleport' in mission.tech_support.lower()) if mission.tech_support else False,
-        'tech_respawn': bool(mission.tech_support and 'respawn' in mission.tech_support.lower()) if mission.tech_support else False,
-        'details_map': mission.details_map,
-        'details_game_mode': mission.details_game_mode,
-        'details_required_dlcs': mission.required_dlcs,
-        'game_server': mission.game_server,
-        'voice_comms': mission.voice_comms,
+        'techTeleport': bool(mission.tech_support and 'teleport' in mission.tech_support.lower()) if mission.tech_support else False,
+        'techRespawn': bool(mission.tech_support and 'respawn' in mission.tech_support.lower()) if mission.tech_support else False,
+        'detailsMap': mission.details_map,
+        'detailsGameMode': mission.details_game_mode,
+        'requiredDLCs': mission.required_dlcs,
+        'gameServer': mission.game_server,
+        'voiceComms': mission.voice_comms,
         'repositories': mission.repositories,
-        'rules_of_engagement': mission.rules or '',
-        'image_url': mission.banner_image_url,
+        'rulesOfEngagement': mission.rules or '',
+        'bannerImageUrl': mission.banner_image_url,
         'creator': {
             'uid': mission.creator.uid,
             'nickname': mission.creator.nickname,
-            'steam_id': None,
-            'community': None,
-            'active': None
+            'steamId': mission.creator.steam_id,
         },
         'community': {
             'uid': mission.community.uid,
@@ -111,9 +157,9 @@ def get_mission(request, slug: str):
             'tag': mission.community.tag,
             'slug': mission.community.slug,
             'website': mission.community.website,
-            'image_url': mission.community.logo_url,
-            'game_servers': mission.community.game_servers,
-            'voice_comms': mission.community.voice_comms,
+            'logoUrl': mission.community.logo_url,
+            'gameServers': mission.community.game_servers,
+            'voiceComms': mission.community.voice_comms,
             'repositories': mission.community.repositories
         } if mission.community else None
     }
@@ -121,7 +167,7 @@ def get_mission(request, slug: str):
     return {'mission': mission_data}
 
 
-@router.post('/', response=MissionSchema)
+@router.post('/')
 def create_mission(request, payload: MissionCreateSchema):
     """Create a new mission"""
     user_uid = request.auth.get('user', {}).get('uid')
@@ -161,47 +207,47 @@ def create_mission(request, payload: MissionCreateSchema):
     )
     
     return {
-        'uid': mission.uid,
-        'slug': mission.slug,
-        'title': mission.title,
-        'description': mission.description,
-        'briefing_time': mission.briefing_time,
-        'slot_list_time': mission.slotting_time,
-        'start_time': mission.start_time,
-        'end_time': mission.end_time,
-        'visibility': mission.visibility,
-        'tech_teleport': bool(mission.tech_support and 'teleport' in mission.tech_support.lower()) if mission.tech_support else False,
-        'tech_respawn': bool(mission.tech_support and 'respawn' in mission.tech_support.lower()) if mission.tech_support else False,
-        'details_map': mission.details_map,
-        'details_game_mode': mission.details_game_mode,
-        'details_required_dlcs': mission.required_dlcs,
-        'game_server': mission.game_server,
-        'voice_comms': mission.voice_comms,
-        'repositories': mission.repositories,
-        'rules_of_engagement': mission.rules or '',
-        'image_url': mission.banner_image_url,
-        'creator': {
-            'uid': user.uid,
-            'nickname': user.nickname,
-            'steam_id': None,
-            'community': None,
-            'active': None
-        },
-        'community': {
-            'uid': community.uid,
-            'name': community.name,
-            'tag': community.tag,
-            'slug': community.slug,
-            'website': community.website,
-            'image_url': community.logo_url,
-            'game_servers': community.game_servers,
-            'voice_comms': community.voice_comms,
-            'repositories': community.repositories
-        } if community else None
+        'mission': {
+            'uid': mission.uid,
+            'slug': mission.slug,
+            'title': mission.title,
+            'description': mission.description,
+            'briefingTime': mission.briefing_time,
+            'slottingTime': mission.slotting_time,
+            'startTime': mission.start_time,
+            'endTime': mission.end_time,
+            'visibility': mission.visibility,
+            'techTeleport': bool(mission.tech_support and 'teleport' in mission.tech_support.lower()) if mission.tech_support else False,
+            'techRespawn': bool(mission.tech_support and 'respawn' in mission.tech_support.lower()) if mission.tech_support else False,
+            'detailsMap': mission.details_map,
+            'detailsGameMode': mission.details_game_mode,
+            'requiredDLCs': mission.required_dlcs,
+            'gameServer': mission.game_server,
+            'voiceComms': mission.voice_comms,
+            'repositories': mission.repositories,
+            'rulesOfEngagement': mission.rules or '',
+            'bannerImageUrl': mission.banner_image_url,
+            'creator': {
+                'uid': user.uid,
+                'nickname': user.nickname,
+                'steamId': user.steam_id,
+            },
+            'community': {
+                'uid': community.uid,
+                'name': community.name,
+                'tag': community.tag,
+                'slug': community.slug,
+                'website': community.website,
+                'logoUrl': community.logo_url,
+                'gameServers': community.game_servers,
+                'voiceComms': community.voice_comms,
+                'repositories': community.repositories
+            } if community else None
+        }
     }
 
 
-@router.patch('/{slug}', response=MissionSchema)
+@router.patch('/{slug}')
 def update_mission(request, slug: str, payload: MissionUpdateSchema):
     """Update a mission"""
     mission = get_object_or_404(Mission, slug=slug)
@@ -255,43 +301,43 @@ def update_mission(request, slug: str, payload: MissionUpdateSchema):
     mission.save()
     
     return {
-        'uid': mission.uid,
-        'slug': mission.slug,
-        'title': mission.title,
-        'description': mission.description,
-        'briefing_time': mission.briefing_time,
-        'slot_list_time': mission.slotting_time,
-        'start_time': mission.start_time,
-        'end_time': mission.end_time,
-        'visibility': mission.visibility,
-        'tech_teleport': bool(mission.tech_support and 'teleport' in mission.tech_support.lower()) if mission.tech_support else False,
-        'tech_respawn': bool(mission.tech_support and 'respawn' in mission.tech_support.lower()) if mission.tech_support else False,
-        'details_map': mission.details_map,
-        'details_game_mode': mission.details_game_mode,
-        'details_required_dlcs': mission.required_dlcs,
-        'game_server': mission.game_server,
-        'voice_comms': mission.voice_comms,
-        'repositories': mission.repositories,
-        'rules_of_engagement': mission.rules or '',
-        'image_url': mission.banner_image_url,
-        'creator': {
-            'uid': mission.creator.uid,
-            'nickname': mission.creator.nickname,
-            'steam_id': None,
-            'community': None,
-            'active': None
-        },
-        'community': {
-            'uid': mission.community.uid,
-            'name': mission.community.name,
-            'tag': mission.community.tag,
-            'slug': mission.community.slug,
-            'website': mission.community.website,
-            'image_url': mission.community.logo_url,
-            'game_servers': mission.community.game_servers,
-            'voice_comms': mission.community.voice_comms,
-            'repositories': mission.community.repositories
-        } if mission.community else None
+        'mission': {
+            'uid': mission.uid,
+            'slug': mission.slug,
+            'title': mission.title,
+            'description': mission.description,
+            'briefingTime': mission.briefing_time,
+            'slottingTime': mission.slotting_time,
+            'startTime': mission.start_time,
+            'endTime': mission.end_time,
+            'visibility': mission.visibility,
+            'techTeleport': bool(mission.tech_support and 'teleport' in mission.tech_support.lower()) if mission.tech_support else False,
+            'techRespawn': bool(mission.tech_support and 'respawn' in mission.tech_support.lower()) if mission.tech_support else False,
+            'detailsMap': mission.details_map,
+            'detailsGameMode': mission.details_game_mode,
+            'requiredDLCs': mission.required_dlcs,
+            'gameServer': mission.game_server,
+            'voiceComms': mission.voice_comms,
+            'repositories': mission.repositories,
+            'rulesOfEngagement': mission.rules or '',
+            'bannerImageUrl': mission.banner_image_url,
+            'creator': {
+                'uid': mission.creator.uid,
+                'nickname': mission.creator.nickname,
+                'steamId': mission.creator.steam_id,
+            },
+            'community': {
+                'uid': mission.community.uid,
+                'name': mission.community.name,
+                'tag': mission.community.tag,
+                'slug': mission.community.slug,
+                'website': mission.community.website,
+                'logoUrl': mission.community.logo_url,
+                'gameServers': mission.community.game_servers,
+                'voiceComms': mission.community.voice_comms,
+                'repositories': mission.community.repositories
+            } if mission.community else None
+        }
     }
 
 

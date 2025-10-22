@@ -6,23 +6,33 @@ from django.http import HttpRequest
 
 
 class JWTAuth(HttpBearer):
-    """JWT Authentication for Django Ninja"""
+    """JWT Authentication for Django Ninja that supports both JWT and Bearer prefixes"""
+    
+    openapi_scheme: str = "bearer"
+    
+    def __call__(self, request: HttpRequest) -> Optional[dict]:
+        """
+        Override __call__ to handle JWT prefix in addition to Bearer.
+        This is called before authenticate() to extract the token from headers.
+        """
+        auth_header = request.headers.get('Authorization', '')
+        
+        # Handle JWT prefix (legacy format)
+        if auth_header.startswith('JWT '):
+            token = auth_header[4:].strip()
+            return self.authenticate(request, token)
+        
+        # Handle Bearer prefix (standard format)
+        elif auth_header.startswith('Bearer '):
+            token = auth_header[7:].strip()
+            return self.authenticate(request, token)
+        
+        return None
     
     def authenticate(self, request: HttpRequest, token: str) -> Optional[dict]:
         """
         Authenticate the request using JWT token.
-        Supports both 'Bearer <token>' and 'JWT <token>' formats.
         """
-        # The token parameter already has the 'Bearer ' prefix stripped by HttpBearer
-        # But if the client sent 'JWT <token>', we need to handle that
-        auth_header = request.headers.get('Authorization', '')
-        
-        # Extract token from header, supporting both JWT and Bearer prefixes
-        if auth_header.startswith('JWT '):
-            token = auth_header[4:]  # Remove 'JWT ' prefix
-        elif auth_header.startswith('Bearer '):
-            token = auth_header[7:]  # Remove 'Bearer ' prefix
-        
         # Decode and verify the token
         payload = decode_jwt(token)
         if payload:

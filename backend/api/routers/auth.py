@@ -4,7 +4,7 @@ from django.conf import settings
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User as DjangoUser
 from api.models import User
-from api.schemas import AuthResponseSchema, UserSchema
+from api.schemas import AuthResponseSchema, UserSchema, ErrorResponseSchema
 from api.auth import generate_jwt, get_or_create_user_from_django_user
 from api.steam_auth import steam_service
 from pydantic import BaseModel
@@ -20,6 +20,10 @@ class DevLoginSchema(BaseModel):
 class DjangoLoginSchema(BaseModel):
     username: str
     password: str
+
+
+class SteamLoginSchema(BaseModel):
+    url: str
 
 
 @router.get('/steam', auth=None)
@@ -52,11 +56,7 @@ def get_steam_login_url(request):
     return {'url': login_url}
 
 
-class SteamLoginSchema(BaseModel):
-    url: str
-
-
-@router.post('/steam', response=AuthResponseSchema, auth=None)
+@router.post('/steam', response={200: AuthResponseSchema, 400: ErrorResponseSchema, 403: ErrorResponseSchema}, auth=None)
 def verify_steam_login(request, payload: SteamLoginSchema):
     """
     Verify Steam OpenID authentication and return JWT

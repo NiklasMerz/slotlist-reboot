@@ -9,9 +9,6 @@ import re
 import requests
 from typing import Optional, Dict, Any
 from django.conf import settings
-from openid.consumer import consumer
-from openid.extensions import sreg
-from openid.store.memstore import MemoryStore
 
 
 class SteamOpenIDService:
@@ -21,7 +18,6 @@ class SteamOpenIDService:
     STEAM_API_URL = 'https://api.steampowered.com'
     
     def __init__(self):
-        self.store = MemoryStore()
         self.steam_api_key = settings.STEAM_API_SECRET
     
     def get_login_url(self, return_url: str, realm: str) -> str:
@@ -35,19 +31,19 @@ class SteamOpenIDService:
         Returns:
             str: Steam OpenID login URL to redirect user to
         """
-        openid_consumer = consumer.Consumer({}, self.store)
+        from urllib.parse import urlencode
         
-        # Begin authentication process
-        auth_request = openid_consumer.begin(self.STEAM_OPENID_URL)
+        # Build OpenID parameters manually to avoid association issues
+        params = {
+            'openid.ns': 'http://specs.openid.net/auth/2.0',
+            'openid.mode': 'checkid_setup',
+            'openid.return_to': return_url,
+            'openid.realm': realm,
+            'openid.identity': 'http://specs.openid.net/auth/2.0/identifier_select',
+            'openid.claimed_id': 'http://specs.openid.net/auth/2.0/identifier_select',
+        }
         
-        # Add simple registration extension
-        sreg_request = sreg.SRegRequest(required=['nickname'])
-        auth_request.addExtension(sreg_request)
-        
-        # Generate redirect URL
-        redirect_url = auth_request.redirectURL(realm, return_url)
-        
-        return redirect_url
+        return f'{self.STEAM_OPENID_URL}/login?{urlencode(params)}'
     
     def verify_and_get_steam_id(self, openid_url: str, return_url: str) -> Optional[str]:
         """

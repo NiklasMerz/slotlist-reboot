@@ -185,6 +185,10 @@ class AuthResponseSchema(Schema):
     user: UserSchema
 
 
+class ErrorResponseSchema(Schema):
+    detail: str
+
+
 class StatusResponseSchema(Schema):
     status: str
     uptime: Optional[int] = None

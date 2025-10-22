@@ -102,9 +102,12 @@ class SteamOpenIDService:
         verify_params = params.copy()
         verify_params['openid.mode'] = 'check_authentication'
         
+        # Use the correct verification URL from the response
+        verification_url = f'{self.STEAM_OPENID_URL}/login'
+        
         try:
-            print(f"Verifying with Steam: {self.STEAM_OPENID_URL}")
-            response = requests.post(self.STEAM_OPENID_URL, data=verify_params, timeout=10)
+            print(f"Verifying with Steam: {verification_url}")
+            response = requests.post(verification_url, data=verify_params, timeout=10)
             response.raise_for_status()
             
             # Check if Steam confirms the authentication

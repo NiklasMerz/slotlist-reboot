@@ -43,7 +43,7 @@ def get_unseen_count(request):
     
     count = Notification.objects.filter(user=user, read=False).count()
     
-    return {'count': count}
+    return {'unseen': count}
 
 
 @router.get('/{notification_uid}', response=NotificationSchema)

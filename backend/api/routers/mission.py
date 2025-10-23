@@ -1,10 +1,11 @@
 from ninja import Router
 from django.shortcuts import get_object_or_404
-from typing import List
+from typing import List, Optional
 from uuid import UUID
 from datetime import datetime
 from django.utils.text import slugify
-from api.models import Mission, Community, User, MissionSlotGroup, MissionSlot, ArmaThreeDLC
+from pydantic import BaseModel
+from api.models import Mission, Community, User, MissionSlotGroup, MissionSlot, ArmaThreeDLC, MissionSlotRegistration
 from api.schemas import MissionSchema, MissionCreateSchema, MissionUpdateSchema
 from api.auth import has_permission
 
@@ -415,3 +416,200 @@ def get_mission_slots(request, slug: str):
         result.append(group_data)
     
     return {'slotGroups': result}
+
+
+# Slot Registration Schemas
+class SlotRegistrationCreateSchema(BaseModel):
+    comment: Optional[str] = None
+
+
+class SlotRegistrationUpdateSchema(BaseModel):
+    confirmed: bool
+    suppressNotifications: Optional[bool] = False
+
+
+@router.get('/{slug}/slots/{slot_uid}/registrations')
+def get_slot_registrations(request, slug: str, slot_uid: UUID, limit: int = 10, offset: int = 0):
+    """Get all registrations for a specific mission slot"""
+    mission = get_object_or_404(Mission, slug=slug)
+    slot = get_object_or_404(MissionSlot, uid=slot_uid, slot_group__mission=mission)
+    
+    total = MissionSlotRegistration.objects.filter(slot=slot).count()
+    registrations = MissionSlotRegistration.objects.filter(slot=slot).select_related('user')[offset:offset + limit]
+    
+    return {
+        'registrations': [
+            {
+                'uid': str(reg.uid),
+                'user': {
+                    'uid': str(reg.user.uid),
+                    'nickname': reg.user.nickname,
+                    'steamId': reg.user.steam_id,
+                },
+                'comment': reg.comment,
+                'createdAt': reg.created_at.isoformat() if reg.created_at else None,
+            }
+            for reg in registrations
+        ],
+        'limit': limit,
+        'offset': offset,
+        'total': total
+    }
+
+
+@router.post('/{slug}/slots/{slot_uid}/registrations', response={200: dict, 400: dict, 403: dict})
+def register_for_slot(request, slug: str, slot_uid: UUID, data: SlotRegistrationCreateSchema):
+    """Register the authenticated user for a mission slot"""
+    user_uid = request.auth.get('user', {}).get('uid')
+    user = get_object_or_404(User, uid=user_uid)
+    
+    mission = get_object_or_404(Mission, slug=slug)
+    slot = get_object_or_404(MissionSlot, uid=slot_uid, slot_group__mission=mission)
+    
+    # Check if user is already registered
+    existing = MissionSlotRegistration.objects.filter(user=user, slot=slot).first()
+    if existing:
+        return 400, {'detail': 'User already registered for this slot'}
+    
+    # Create registration
+    registration = MissionSlotRegistration.objects.create(
+        user=user,
+        slot=slot,
+        comment=data.comment
+    )
+    
+    return {
+        'registration': {
+            'uid': str(registration.uid),
+            'user': {
+                'uid': str(user.uid),
+                'nickname': user.nickname,
+                'steamId': user.steam_id,
+            },
+            'comment': registration.comment,
+            'createdAt': registration.created_at.isoformat() if registration.created_at else None,
+        }
+    }
+
+
+@router.patch('/{slug}/slots/{slot_uid}/registrations/{registration_uid}', response={200: dict, 400: dict, 403: dict})
+def update_slot_registration(request, slug: str, slot_uid: UUID, registration_uid: UUID, data: SlotRegistrationUpdateSchema):
+    """Update/confirm a slot registration (requires permissions)"""
+    user_uid = request.auth.get('user', {}).get('uid')
+    user = get_object_or_404(User, uid=user_uid)
+    permissions = request.auth.get('permissions', [])
+    
+    mission = get_object_or_404(Mission, slug=slug)
+    slot = get_object_or_404(MissionSlot, uid=slot_uid, slot_group__mission=mission)
+    registration = get_object_or_404(MissionSlotRegistration, uid=registration_uid, slot=slot)
+
+    
+    # Check permissions - user must be mission creator or have appropriate permissions
+    is_creator = str(mission.creator.uid) == str(user.uid)
+    has_perm = has_permission(permissions, ['mission.slot.assign', 'admin.*'])
+    
+    if not is_creator and not has_perm:
+        return 403, {'detail': 'Insufficient permissions to confirm registration'}
+    
+    # If confirmed, assign the slot to the user
+    if data.confirmed:
+        # Check if slot is already assigned
+        if slot.assignee:
+            return 400, {'detail': 'Slot is already assigned'}
+        
+        # Store registration info before deletion
+        registration_user = registration.user
+        registration_uid_str = str(registration.uid)
+        registration_comment = registration.comment
+        
+        slot.assignee = registration_user
+        slot.save()
+        
+        # Delete the registration after confirming
+        registration.delete()
+        
+        return {
+            'registration': {
+                'uid': registration_uid_str,
+                'user': {
+                    'uid': str(registration_user.uid),
+                    'nickname': registration_user.nickname,
+                    'steamId': registration_user.steam_id,
+                },
+                'comment': registration_comment,
+                'confirmed': True
+            }
+        }
+    
+    return {
+        'registration': {
+            'uid': str(registration.uid),
+            'user': {
+                'uid': str(registration.user.uid),
+                'nickname': registration.user.nickname,
+                'steamId': registration.user.steam_id,
+            },
+            'comment': registration.comment,
+            'confirmed': False
+        }
+    }
+
+
+@router.delete('/{slug}/slots/{slot_uid}/registrations/{registration_uid}', response={200: dict, 403: dict})
+def delete_slot_registration(request, slug: str, slot_uid: UUID, registration_uid: UUID):
+    """Delete/unregister from a slot"""
+    user_uid = request.auth.get('user', {}).get('uid')
+    user = get_object_or_404(User, uid=user_uid)
+    permissions = request.auth.get('permissions', [])
+    
+    mission = get_object_or_404(Mission, slug=slug)
+    slot = get_object_or_404(MissionSlot, uid=slot_uid, slot_group__mission=mission)
+    registration = get_object_or_404(MissionSlotRegistration, uid=registration_uid, slot=slot)
+    
+    # User can delete their own registration, or mission creator/admin can delete any
+    is_own_registration = str(registration.user.uid) == str(user.uid)
+    is_creator = str(mission.creator.uid) == str(user.uid)
+    has_perm = has_permission(permissions, ['mission.slot.assign', 'admin.*'])
+    
+    if not is_own_registration and not is_creator and not has_perm:
+        return 403, {'detail': 'Insufficient permissions to delete this registration'}
+    
+    registration.delete()
+    
+    return {'success': True}
+
+
+@router.post('/{slug}/slots/{slot_uid}/unassign', response={200: dict, 400: dict, 403: dict})
+def unassign_slot(request, slug: str, slot_uid: UUID):
+    """Unassign a user from a mission slot"""
+    user_uid = request.auth.get('user', {}).get('uid')
+    user = get_object_or_404(User, uid=user_uid)
+    permissions = request.auth.get('permissions', [])
+    
+    mission = get_object_or_404(Mission, slug=slug)
+    slot = get_object_or_404(MissionSlot, uid=slot_uid, slot_group__mission=mission)
+    
+    if not slot.assignee:
+        return 400, {'detail': 'Slot is not assigned'}
+    
+    # Check permissions - user must be the assignee, mission creator, or have appropriate permissions
+    is_assignee = str(slot.assignee.uid) == str(user.uid)
+    is_creator = str(mission.creator.uid) == str(user.uid)
+    has_perm = has_permission(permissions, ['mission.slot.assign', 'admin.*'])
+    
+    if not is_assignee and not is_creator and not has_perm:
+        return 403, {'detail': 'Insufficient permissions to unassign this slot'}
+    
+    slot.assignee = None
+    slot.save()
+    
+    return {
+        'slot': {
+            'uid': str(slot.uid),
+            'title': slot.title,
+            'assignee': None
+        }
+    }
+
+
+

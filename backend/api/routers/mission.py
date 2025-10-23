@@ -129,6 +129,17 @@ def list_missions(request, limit: int = 25, offset: int = 0, includeEnded: bool 
     }
 
 
+@router.get('/slugAvailable', auth=None)
+def check_slug_availability(request, slug: str):
+    """Check if a mission slug is available"""
+    # Check if a mission with this slug already exists
+    exists = Mission.objects.filter(slug=slug).exists()
+    
+    return {
+        'available': not exists
+    }
+
+
 @router.get('/{slug}', auth=None)
 def get_mission(request, slug: str):
     """Get a single mission by slug"""

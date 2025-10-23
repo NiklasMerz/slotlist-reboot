@@ -10,6 +10,17 @@ from api.auth import has_permission
 router = Router()
 
 
+@router.get('/slugAvailable', auth=None)
+def check_slug_availability(request, slug: str):
+    """Check if a community slug is available"""
+    # Check if a community with this slug already exists
+    exists = Community.objects.filter(slug=slug).exists()
+    
+    return {
+        'available': not exists
+    }
+
+
 @router.get('/', auth=None)
 def list_communities(request, limit: int = 25, offset: int = 0):
     """List all communities with pagination"""

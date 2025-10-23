@@ -9,30 +9,37 @@ from api.auth import has_permission
 router = Router()
 
 
-@router.get('/', response=List[UserSchema])
+@router.get('/')
 def list_users(request, limit: int = 25, offset: int = 0):
     """List all users with pagination"""
+    total = User.objects.count()
     users = User.objects.select_related('community').all()[offset:offset + limit]
-    return [
-        {
-            'uid': user.uid,
-            'nickname': user.nickname,
-            'steam_id': None,  # Don't expose by default
-            'community': {
-                'uid': user.community.uid,
-                'name': user.community.name,
-                'tag': user.community.tag,
-                'slug': user.community.slug,
-                'website': user.community.website,
-                'image_url': user.community.image_url,
-                'game_servers': user.community.game_servers,
-                'voice_comms': user.community.voice_comms,
-                'repositories': user.community.repositories
-            } if user.community else None,
-            'active': None
-        }
-        for user in users
-    ]
+    
+    return {
+        'users': [
+            {
+                'uid': str(user.uid),
+                'nickname': user.nickname,
+                'steamId': user.steam_id,
+                'community': {
+                    'uid': str(user.community.uid),
+                    'name': user.community.name,
+                    'tag': user.community.tag,
+                    'slug': user.community.slug,
+                    'website': user.community.website,
+                    'logoUrl': user.community.logo_url,
+                    'gameServers': user.community.game_servers,
+                    'voiceComms': user.community.voice_comms,
+                    'repositories': user.community.repositories
+                } if user.community else None,
+                'active': user.active
+            }
+            for user in users
+        ],
+        'limit': limit,
+        'offset': offset,
+        'total': total
+    }
 
 
 @router.get('/{user_uid}', response=UserDetailSchema)

@@ -378,6 +378,7 @@ def refresh_token(request):
     if not user_data:
         return 401, {'detail': 'Invalid token'}
     
+    
     user = get_object_or_404(User, uid=user_data['uid'])
     
     if not user.active:
@@ -395,4 +396,149 @@ def refresh_token(request):
             'active': user.active
         }
     }
+
+
+@router.get('/account', auth=JWTAuth())
+def get_account_details(request):
+    """
+    Get authenticated user's account details
+    
+    Returns detailed information about the currently authenticated user including
+    their community association and account status.
+    
+    **Authentication:** Required (JWT)
+    
+    **Returns:**
+    - `user` (object): User account details
+    
+    **Example Response:**
+    ```json
+    {
+        "user": {
+            "uid": "123e4567-e89b-12d3-a456-426614174000",
+            "nickname": "PlayerName",
+            "steamId": "76561198...",
+            "community": {
+                "uid": "...",
+                "name": "Community Name",
+                "tag": "[TAG]",
+                "slug": "community-slug"
+            },
+            "active": true
+        }
+    }
+    ```
+    
+    **Errors:**
+    - `401`: Invalid or expired token
+    - `403`: User account is deactivated
+    """
+    user_data = request.auth.get('user')
+    if not user_data:
+        return 401, {'detail': 'Invalid token'}
+    
+    user = get_object_or_404(User.objects.select_related('community'), uid=user_data['uid'])
+    
+    if not user.active:
+        return 403, {'detail': 'User account is deactivated'}
+    
+    return {
+        'user': {
+            'uid': str(user.uid),
+            'nickname': user.nickname,
+            'steamId': user.steam_id,
+            'community': {
+                'uid': str(user.community.uid),
+                'name': user.community.name,
+                'tag': user.community.tag,
+                'slug': user.community.slug,
+            } if user.community else None,
+            'active': user.active
+        }
+    }
+
+
+@router.patch('/account', auth=JWTAuth())
+def update_account(request, payload: dict):
+    """
+    Update authenticated user's account details
+    
+    Allows users to update their own account information such as nickname.
+    
+    **Authentication:** Required (JWT)
+    
+    **Request Body:**
+    - `nickname` (str, optional): New nickname for the user
+    
+    **Returns:**
+    - `user` (object): Updated user account details
+    
+    **Errors:**
+    - `401`: Invalid or expired token
+    - `403`: User account is deactivated
+    """
+    user_data = request.auth.get('user')
+    if not user_data:
+        return 401, {'detail': 'Invalid token'}
+    
+    user = get_object_or_404(User.objects.select_related('community'), uid=user_data['uid'])
+    
+    if not user.active:
+        return 403, {'detail': 'User account is deactivated'}
+    
+    # Update nickname if provided
+    if 'nickname' in payload:
+        user.nickname = payload['nickname']
+        user.save()
+    
+    return {
+        'user': {
+            'uid': str(user.uid),
+            'nickname': user.nickname,
+            'steamId': user.steam_id,
+            'community': {
+                'uid': str(user.community.uid),
+                'name': user.community.name,
+                'tag': user.community.tag,
+                'slug': user.community.slug,
+            } if user.community else None,
+            'active': user.active
+        }
+    }
+
+
+@router.post('/account/delete', auth=JWTAuth())
+def delete_account(request, payload: dict):
+    """
+    Delete authenticated user's account
+    
+    Requires confirmation by providing the user's nickname. This action is irreversible.
+    
+    **Authentication:** Required (JWT)
+    
+    **Request Body:**
+    - `nickname` (str): User's nickname for confirmation
+    
+    **Returns:**
+    - `success` (bool): Whether the deletion was successful
+    
+    **Errors:**
+    - `400`: Nickname confirmation doesn't match
+    - `401`: Invalid or expired token
+    """
+    user_data = request.auth.get('user')
+    if not user_data:
+        return 401, {'detail': 'Invalid token'}
+    
+    user = get_object_or_404(User, uid=user_data['uid'])
+    
+    # Verify nickname for confirmation
+    if 'nickname' not in payload or payload['nickname'] != user.nickname:
+        return 400, {'detail': 'Nickname confirmation does not match'}
+    
+    # Delete the user
+    user.delete()
+    
+    return {'success': True}
+
 

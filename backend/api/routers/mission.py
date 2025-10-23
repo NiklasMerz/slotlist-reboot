@@ -377,13 +377,17 @@ def get_mission_slots(request, slug: str):
     # Get all slot groups with their slots for this mission
     slot_groups = MissionSlotGroup.objects.filter(mission=mission).prefetch_related(
         'slots__assignee',
-        'slots__restricted_community'
+        'slots__restricted_community',
+        'slots__registrations'
     ).order_by('order_number')
     
     result = []
     for slot_group in slot_groups:
         slots = []
         for slot in slot_group.slots.order_by('order_number'):
+            # Count pending registrations for this slot
+            registration_count = slot.registrations.count()
+            
             slot_data = {
                 'uid': str(slot.uid),
                 'title': slot.title,
@@ -392,6 +396,10 @@ def get_mission_slots(request, slug: str):
                 'orderNumber': slot.order_number,
                 'requiredDLCs': slot.required_dlcs,
                 'externalAssignee': slot.external_assignee,
+                'registrationCount': registration_count,
+                'blocked': slot.blocked,
+                'reserve': slot.reserve,
+                'autoAssignable': slot.auto_assignable,
                 'assignee': {
                     'uid': str(slot.assignee.uid),
                     'nickname': slot.assignee.nickname,
@@ -441,12 +449,14 @@ def get_slot_registrations(request, slug: str, slot_uid: UUID, limit: int = 10, 
         'registrations': [
             {
                 'uid': str(reg.uid),
+                'slotUid': str(reg.slot.uid),
                 'user': {
                     'uid': str(reg.user.uid),
                     'nickname': reg.user.nickname,
                     'steamId': reg.user.steam_id,
                 },
                 'comment': reg.comment,
+                'confirmed': False,  # All existing registrations are pending (not confirmed)
                 'createdAt': reg.created_at.isoformat() if reg.created_at else None,
             }
             for reg in registrations
@@ -481,12 +491,14 @@ def register_for_slot(request, slug: str, slot_uid: UUID, data: SlotRegistration
     return {
         'registration': {
             'uid': str(registration.uid),
+            'slotUid': str(slot.uid),
             'user': {
                 'uid': str(user.uid),
                 'nickname': user.nickname,
                 'steamId': user.steam_id,
             },
             'comment': registration.comment,
+            'confirmed': False,  # New registrations are pending
             'createdAt': registration.created_at.isoformat() if registration.created_at else None,
         }
     }

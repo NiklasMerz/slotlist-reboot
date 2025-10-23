@@ -35,8 +35,8 @@ services:
       - DB_HOST=db
       - DB_PORT=5432
       - CONFIG_JWT_SECRET=development-secret-key-change-in-production
-      - CONFIG_JWT_ISSUER=http://localhost:8022
-      - CONFIG_JWT_AUDIENCE=http://localhost:8022
+      - CONFIG_JWT_ISSUER=http://localhost:3000
+      - CONFIG_JWT_AUDIENCE=http://localhost:3000
       - DJANGO_SECRET_KEY=development-django-secret-change-in-production
       - ALLOWED_HOSTS=*
       - CORS_ALLOW_ALL_ORIGINS=True

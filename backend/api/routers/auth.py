@@ -1,13 +1,54 @@
 from ninja import Router
+from ninja.security import HttpBearer
 from django.shortcuts import get_object_or_404
 from django.conf import settings
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User as DjangoUser
+from django.http import HttpRequest
+from typing import Optional
 from api.models import User
 from api.schemas import AuthResponseSchema, UserSchema, ErrorResponseSchema
-from api.auth import generate_jwt, get_or_create_user_from_django_user
+from api.auth import generate_jwt, get_or_create_user_from_django_user, decode_jwt
 from api.steam_auth import steam_service
 from pydantic import BaseModel
+
+
+class JWTAuth(HttpBearer):
+    """JWT Authentication for Django Ninja that supports both JWT and Bearer prefixes"""
+    
+    openapi_scheme: str = "bearer"
+    
+    def __call__(self, request: HttpRequest) -> Optional[dict]:
+        """
+        Override __call__ to handle JWT prefix in addition to Bearer.
+        This is called before authenticate() to extract the token from headers.
+        """
+        auth_header = request.headers.get('Authorization', '')
+        
+        # Handle JWT prefix (legacy format)
+        if auth_header.startswith('JWT '):
+            token = auth_header[4:].strip()
+            return self.authenticate(request, token)
+        
+        # Handle Bearer prefix (standard format)
+        elif auth_header.startswith('Bearer '):
+            token = auth_header[7:].strip()
+            return self.authenticate(request, token)
+        
+        return None
+    
+    def authenticate(self, request: HttpRequest, token: str) -> Optional[dict]:
+        """
+        Authenticate the request using JWT token.
+        """
+        # Decode and verify the token
+        payload = decode_jwt(token)
+        if payload:
+            return payload
+        
+        print(f"JWT authentication failed for token: {token[:50]}...")
+        return None
+
 
 router = Router()
 
@@ -302,7 +343,7 @@ def django_login(request, credentials: DjangoLoginSchema):
     }
 
 
-@router.post('/refresh', response=AuthResponseSchema)
+@router.post('/refresh', response=AuthResponseSchema, auth=JWTAuth())
 def refresh_token(request):
     """
     Refresh JWT token

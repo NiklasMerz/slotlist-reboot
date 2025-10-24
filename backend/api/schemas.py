@@ -121,6 +121,7 @@ class NotificationSchema(Schema):
 # Input Schemas for creating/updating
 class MissionCreateSchema(Schema):
     title: str
+    slug: Optional[str] = None
     description: Optional[str] = ''
     briefing_time: Optional[datetime] = Field(None, alias='briefingTime')
     slotting_time: Optional[datetime] = Field(None, alias='slottingTime')

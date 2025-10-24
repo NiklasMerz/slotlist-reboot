@@ -200,8 +200,8 @@ def create_mission(request, payload: MissionCreateSchema):
     if payload.community_uid:
         community = get_object_or_404(Community, uid=payload.community_uid)
     
-    # Generate slug from title
-    slug = slugify(payload.title)
+    # Use provided slug or generate from title
+    slug = payload.slug if payload.slug else slugify(payload.title)
     
     # Convert tech_teleport and tech_respawn to tech_support string
     tech_support_parts = []

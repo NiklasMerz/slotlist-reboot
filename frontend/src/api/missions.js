@@ -3,28 +3,28 @@ import * as _ from 'lodash'
 
 export const v1 = {
   addMissionAccess(missionSlug, payload) {
-    return axios.post(`/v1/missions/${missionSlug}/accesses`, payload)
+    return axios.post(`/v1/missions/${missionSlug}/accesses/`, payload)
   },
   addMissionPermission(missionSlug, payload, suppressNotifications) {
-    return axios.post(`/v1/missions/${missionSlug}/permissions`, _.defaults(payload, { suppressNotifications }))
+    return axios.post(`/v1/missions/${missionSlug}/permissions/`, _.defaults(payload, { suppressNotifications }))
   },
   applySlotTemplateToMission(missionSlug, slotTemplateUid, insertAfter) {
-    return axios.post(`/v1/missions/${missionSlug}/slotTemplates/${slotTemplateUid}`, { insertAfter })
+    return axios.post(`/v1/missions/${missionSlug}/slotTemplates/${slotTemplateUid}/`, { insertAfter })
   },
   assignMissionSlot(missionSlug, slotUid, userUid, force, suppressNotifications) {
-    return axios.post(`/v1/missions/${missionSlug}/slots/${slotUid}/assign`, { userUid, force, suppressNotifications })
+    return axios.post(`/v1/missions/${missionSlug}/slots/${slotUid}/assign/`, { userUid, force, suppressNotifications })
   },
   checkMissionSlugAvailability(missionSlug) {
     return axios.get(`/v1/missions/slugAvailable?slug=${missionSlug}`)
   },
   createMission(payload) {
-    return axios.post('/v1/missions', payload)
+    return axios.post('/v1/missions/', payload)
   },
   createMissionSlot(missionSlug, payload) {
-    return axios.post(`/v1/missions/${missionSlug}/slots`, _.isArray(payload) ? payload : [payload])
+    return axios.post(`/v1/missions/${missionSlug}/slots/`, _.isArray(payload) ? payload : [payload])
   },
   createMissionSlotGroup(missionSlug, payload) {
-    return axios.post(`/v1/missions/${missionSlug}/slotGroups`, payload)
+    return axios.post(`/v1/missions/${missionSlug}/slotGroups/`, payload)
   },
   deleteMission(missionSlug) {
     return axios.delete(`/v1/missions/${missionSlug}`)
@@ -48,7 +48,7 @@ export const v1 = {
     return axios.delete(`/v1/missions/${missionSlug}/token`)
   },
   duplicateMission(missionSlug, payload) {
-    return axios.post(`/v1/missions/${missionSlug}/duplicate`, payload)
+    return axios.post(`/v1/missions/${missionSlug}/duplicate/`, payload)
   },
   editMission(missionSlug, payload, suppressNotifications) {
     return axios.patch(`/v1/missions/${missionSlug}`, _.defaults(payload, { suppressNotifications }))
@@ -60,7 +60,7 @@ export const v1 = {
     return axios.patch(`/v1/missions/${missionSlug}/slotGroups/${slotGroupUid}`, payload)
   },
   generateMissionToken(missionSlug) {
-    return axios.post(`/v1/missions/${missionSlug}/token`)
+    return axios.post(`/v1/missions/${missionSlug}/token/`)
   },
   getMissionAccesses(missionSlug, limit = 10, offset = 0) {
     return axios.get(`/v1/missions/${missionSlug}/accesses?limit=${limit}&offset=${offset}`)
@@ -90,13 +90,13 @@ export const v1 = {
     return axios.patch(`/v1/missions/${missionSlug}/slots/${slotUid}/registrations/${registrationUid}`, { confirmed: confirm, suppressNotifications })
   },
   registerForMissionSlot(missionSlug, slotUid, comment) {
-    return axios.post(`/v1/missions/${missionSlug}/slots/${slotUid}/registrations`, { comment })
+    return axios.post(`/v1/missions/${missionSlug}/slots/${slotUid}/registrations/`, { comment })
   },
   searchMissions(payload) {
     return axios.get(`/v1/missions?search=${payload}`)
   },
   unassignMissionSlot(missionSlug, slotUid) {
-    return axios.post(`/v1/missions/${missionSlug}/slots/${slotUid}/unassign`)
+    return axios.post(`/v1/missions/${missionSlug}/slots/${slotUid}/unassign/`)
   },
   unregisterFromMissionSlot(missionSlug, slotUid, registrationUid) {
     return axios.delete(`/v1/missions/${missionSlug}/slots/${slotUid}/registrations/${registrationUid}`)

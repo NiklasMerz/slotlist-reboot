@@ -203,23 +203,38 @@ def create_mission(request, payload: MissionCreateSchema):
     # Generate slug from title
     slug = slugify(payload.title)
     
+    # Convert tech_teleport and tech_respawn to tech_support string
+    tech_support_parts = []
+    if payload.tech_teleport:
+        tech_support_parts.append('teleport')
+    if payload.tech_respawn:
+        tech_support_parts.append('respawn')
+    tech_support = ', '.join(tech_support_parts) if tech_support_parts else None
+    
+    # Use default datetime for required fields if not provided
+    # This matches the original TypeScript backend behavior
+    from datetime import datetime, timezone
+    default_time = datetime.now(timezone.utc)
+    
     # Create mission
     mission = Mission.objects.create(
         slug=slug,
         title=payload.title,
         description=payload.description,
-        briefing_time=payload.briefing_time,
-        slotting_time=payload.slot_list_time,
-        start_time=payload.start_time,
-        end_time=payload.end_time,
+        short_description=payload.description or '',
+        detailed_description='',
+        briefing_time=payload.briefing_time or default_time,
+        slotting_time=payload.slot_list_time or default_time,
+        start_time=payload.start_time or default_time,
+        end_time=payload.end_time or default_time,
         visibility=payload.visibility,
-        tech_support=payload.tech_support,
+        tech_support=tech_support,
         details_map=payload.details_map,
         details_game_mode=payload.details_game_mode,
-        required_dlcs=payload.details_required_dlcs,
+        required_dlcs=payload.details_required_dlcs if payload.details_required_dlcs is not None else [],
         game_server=payload.game_server,
         voice_comms=payload.voice_comms,
-        repositories=payload.repositories,
+        repositories=payload.repositories if payload.repositories is not None else [],
         rules=payload.rules_of_engagement,
         creator=user,
         community=community
@@ -300,8 +315,25 @@ def update_mission(request, slug: str, payload: MissionUpdateSchema):
         mission.end_time = payload.end_time
     if payload.visibility is not None:
         mission.visibility = payload.visibility
-    if payload.tech_support is not None:
-        mission.tech_support = payload.tech_support
+    
+    # Handle tech_teleport and tech_respawn conversion to tech_support
+    if payload.tech_teleport is not None or payload.tech_respawn is not None:
+        # Get current tech_support settings
+        current_teleport = mission.tech_support and 'teleport' in mission.tech_support.lower() if mission.tech_support else False
+        current_respawn = mission.tech_support and 'respawn' in mission.tech_support.lower() if mission.tech_support else False
+        
+        # Update with new values if provided
+        new_teleport = payload.tech_teleport if payload.tech_teleport is not None else current_teleport
+        new_respawn = payload.tech_respawn if payload.tech_respawn is not None else current_respawn
+        
+        # Build new tech_support string
+        tech_support_parts = []
+        if new_teleport:
+            tech_support_parts.append('teleport')
+        if new_respawn:
+            tech_support_parts.append('respawn')
+        mission.tech_support = ', '.join(tech_support_parts) if tech_support_parts else None
+    
     if payload.details_map is not None:
         mission.details_map = payload.details_map
     if payload.details_game_mode is not None:

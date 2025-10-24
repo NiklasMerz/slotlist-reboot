@@ -306,3 +306,80 @@ def get_community_servers(request, slug: str):
         'gameServers': community.game_servers or [],
         'voiceComms': community.voice_comms or []
     }
+
+
+@router.get('/{slug}/applications/status', response={200: dict, 404: dict})
+def get_community_application_status(request, slug: str):
+    """Get the authenticated user's application status for a community"""
+    from api.models import CommunityApplication
+    
+    # User must be authenticated
+    if not request.auth:
+        return 401, {'detail': 'Authentication required'}
+    
+    community = get_object_or_404(Community, slug=slug)
+    auth_user_uid = request.auth.get('user', {}).get('uid')
+    
+    if not auth_user_uid:
+        return 401, {'detail': 'Invalid authentication'}
+    
+    # Try to find the user's application for this community
+    try:
+        application = CommunityApplication.objects.get(
+            user__uid=auth_user_uid,
+            community=community
+        )
+        
+        return 200, {
+            'application': {
+                'uid': str(application.uid),
+                'status': application.status,
+                'applicationText': application.application_text,
+                'createdAt': application.created_at.isoformat() if application.created_at else None,
+                'updatedAt': application.updated_at.isoformat() if application.updated_at else None
+            }
+        }
+    except CommunityApplication.DoesNotExist:
+        # Return 404 when no application found
+        return 404, {'message': 'Community application not found'}
+
+
+@router.post('/{slug}/applications')
+def create_community_application(request, slug: str):
+    """Submit an application to join a community"""
+    from api.models import CommunityApplication, User
+    
+    # User must be authenticated
+    if not request.auth:
+        return 401, {'detail': 'Authentication required'}
+    
+    community = get_object_or_404(Community, slug=slug)
+    auth_user_uid = request.auth.get('user', {}).get('uid')
+    
+    if not auth_user_uid:
+        return 401, {'detail': 'Invalid authentication'}
+    
+    # Get the user
+    user = get_object_or_404(User, uid=auth_user_uid)
+    
+    # Check if user already has an application for this community
+    existing_app = CommunityApplication.objects.filter(
+        user=user,
+        community=community
+    ).first()
+    
+    if existing_app:
+        return 400, {'message': 'You have already submitted an application to this community'}
+    
+    # Create the application
+    application = CommunityApplication.objects.create(
+        user=user,
+        community=community,
+        status='submitted',
+        application_text=''  # Default empty text as the API doesn't seem to accept text in the POST
+    )
+    
+    return {
+        'status': application.status,
+        'uid': str(application.uid)
+    }

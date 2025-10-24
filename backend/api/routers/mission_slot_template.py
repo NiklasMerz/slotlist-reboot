@@ -50,11 +50,26 @@ def get_mission_slot_template(request, uid: UUID):
     """Get a single mission slot template by UID"""
     template = get_object_or_404(MissionSlotTemplate.objects.select_related('creator', 'community'), uid=uid)
     
+    # Ensure each slot group has a slots array
+    slot_groups = template.slot_groups or []
+    # Make a copy to avoid modifying the original
+    slot_groups_copy = []
+    for group in slot_groups:
+        if isinstance(group, dict):
+            # It's already a dict, ensure it has slots
+            group_copy = dict(group)
+            if 'slots' not in group_copy:
+                group_copy['slots'] = []
+            slot_groups_copy.append(group_copy)
+        else:
+            # Skip non-dict items
+            continue
+    
     return {
         'slotTemplate': {
             'uid': str(template.uid),
             'title': template.title,
-            'slotGroups': template.slot_groups,
+            'slotGroups': slot_groups_copy,
             'creator': {
                 'uid': str(template.creator.uid),
                 'nickname': template.creator.nickname,

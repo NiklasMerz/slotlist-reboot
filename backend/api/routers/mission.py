@@ -193,7 +193,7 @@ def create_mission(request, payload: MissionCreateSchema):
     user = get_object_or_404(User, uid=user_uid)
     
     # Validate DLCs
-    validate_dlc_list(payload.details_required_dlcs, 'details_required_dlcs')
+    validate_dlc_list(payload.required_dlcs, 'requiredDLCs')
     
     # Get community if specified
     community = None
@@ -212,11 +212,9 @@ def create_mission(request, payload: MissionCreateSchema):
     tech_support = ', '.join(tech_support_parts) if tech_support_parts else None
     
     # Use default datetime for required fields if not provided
-    # This matches the original TypeScript backend behavior
     from datetime import datetime, timezone
     default_time = datetime.now(timezone.utc)
-    
-    # Create mission
+
     mission = Mission.objects.create(
         slug=slug,
         title=payload.title,
@@ -224,14 +222,14 @@ def create_mission(request, payload: MissionCreateSchema):
         short_description=payload.description or '',
         detailed_description='',
         briefing_time=payload.briefing_time or default_time,
-        slotting_time=payload.slot_list_time or default_time,
+        slotting_time=payload.slotting_time or default_time,
         start_time=payload.start_time or default_time,
         end_time=payload.end_time or default_time,
         visibility=payload.visibility,
         tech_support=tech_support,
         details_map=payload.details_map,
         details_game_mode=payload.details_game_mode,
-        required_dlcs=payload.details_required_dlcs if payload.details_required_dlcs is not None else [],
+        required_dlcs=payload.required_dlcs if payload.required_dlcs is not None else [],
         game_server=payload.game_server,
         voice_comms=payload.voice_comms,
         repositories=payload.repositories if payload.repositories is not None else [],
@@ -297,8 +295,8 @@ def update_mission(request, slug: str, payload: MissionUpdateSchema):
         return 403, {'detail': 'Forbidden'}
     
     # Validate DLCs if provided
-    if payload.details_required_dlcs is not None:
-        validate_dlc_list(payload.details_required_dlcs, 'details_required_dlcs')
+    if payload.required_dlcs is not None:
+        validate_dlc_list(payload.required_dlcs, 'requiredDLCs')
     
     # Update fields
     if payload.title is not None:
@@ -307,8 +305,8 @@ def update_mission(request, slug: str, payload: MissionUpdateSchema):
         mission.description = payload.description
     if payload.briefing_time is not None:
         mission.briefing_time = payload.briefing_time
-    if payload.slot_list_time is not None:
-        mission.slotting_time = payload.slot_list_time
+    if payload.slotting_time is not None:
+        mission.slotting_time = payload.slotting_time
     if payload.start_time is not None:
         mission.start_time = payload.start_time
     if payload.end_time is not None:
@@ -338,8 +336,8 @@ def update_mission(request, slug: str, payload: MissionUpdateSchema):
         mission.details_map = payload.details_map
     if payload.details_game_mode is not None:
         mission.details_game_mode = payload.details_game_mode
-    if payload.details_required_dlcs is not None:
-        mission.required_dlcs = payload.details_required_dlcs
+    if payload.required_dlcs is not None:
+        mission.required_dlcs = payload.required_dlcs
     if payload.game_server is not None:
         mission.game_server = payload.game_server
     if payload.voice_comms is not None:

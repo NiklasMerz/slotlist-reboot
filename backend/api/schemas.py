@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Optional, List, Any
 from uuid import UUID
-from ninja import Schema
+from ninja import Schema, Field
 
 
 class CommunitySchema(Schema):
@@ -122,40 +122,46 @@ class NotificationSchema(Schema):
 class MissionCreateSchema(Schema):
     title: str
     description: Optional[str] = ''
-    briefing_time: Optional[datetime] = None
-    slot_list_time: Optional[datetime] = None
-    start_time: Optional[datetime] = None
-    end_time: Optional[datetime] = None
+    briefing_time: Optional[datetime] = Field(None, alias='briefingTime')
+    slotting_time: Optional[datetime] = Field(None, alias='slottingTime')
+    start_time: Optional[datetime] = Field(None, alias='startTime')
+    end_time: Optional[datetime] = Field(None, alias='endTime')
     visibility: str = 'hidden'
-    tech_teleport: bool = False
-    tech_respawn: bool = False
-    details_map: Optional[str] = None
-    details_game_mode: Optional[str] = None
-    details_required_dlcs: Optional[List[str]] = None
-    game_server: Optional[Any] = None
-    voice_comms: Optional[Any] = None
+    tech_teleport: bool = Field(False, alias='techTeleport')
+    tech_respawn: bool = Field(False, alias='techRespawn')
+    details_map: Optional[str] = Field(None, alias='detailsMap')
+    details_game_mode: Optional[str] = Field(None, alias='detailsGameMode')
+    required_dlcs: Optional[List[str]] = Field(None, alias='requiredDLCs')
+    game_server: Optional[Any] = Field(None, alias='gameServer')
+    voice_comms: Optional[Any] = Field(None, alias='voiceComms')
     repositories: Optional[List[Any]] = None
-    rules_of_engagement: Optional[str] = ''
+    rules_of_engagement: Optional[str] = Field('', alias='rulesOfEngagement')
     community_uid: Optional[UUID] = None
+    
+    class Config:
+        populate_by_name = True
 
 
 class MissionUpdateSchema(Schema):
     title: Optional[str] = None
     description: Optional[str] = None
-    briefing_time: Optional[datetime] = None
-    slot_list_time: Optional[datetime] = None
-    start_time: Optional[datetime] = None
-    end_time: Optional[datetime] = None
+    briefing_time: Optional[datetime] = Field(None, alias='briefingTime')
+    slotting_time: Optional[datetime] = Field(None, alias='slottingTime')
+    start_time: Optional[datetime] = Field(None, alias='startTime')
+    end_time: Optional[datetime] = Field(None, alias='endTime')
     visibility: Optional[str] = None
-    tech_teleport: Optional[bool] = None
-    tech_respawn: Optional[bool] = None
-    details_map: Optional[str] = None
-    details_game_mode: Optional[str] = None
-    details_required_dlcs: Optional[List[str]] = None
-    game_server: Optional[Any] = None
-    voice_comms: Optional[Any] = None
+    tech_teleport: Optional[bool] = Field(None, alias='techTeleport')
+    tech_respawn: Optional[bool] = Field(None, alias='techRespawn')
+    details_map: Optional[str] = Field(None, alias='detailsMap')
+    details_game_mode: Optional[str] = Field(None, alias='detailsGameMode')
+    required_dlcs: Optional[List[str]] = Field(None, alias='requiredDLCs')
+    game_server: Optional[Any] = Field(None, alias='gameServer')
+    voice_comms: Optional[Any] = Field(None, alias='voiceComms')
     repositories: Optional[List[Any]] = None
-    rules_of_engagement: Optional[str] = None
+    rules_of_engagement: Optional[str] = Field(None, alias='rulesOfEngagement')
+    
+    class Config:
+        populate_by_name = True
 
 
 class UserUpdateSchema(Schema):

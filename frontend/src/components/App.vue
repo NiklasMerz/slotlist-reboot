@@ -8,7 +8,7 @@
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav mr-auto">
           <li class="nav-item">
-            <router-link class="nav-link" :to="{name:'home'}">
+            <router-link class="nav-link" :to="{name:'home'}" exact>
               <i class="fa fa-home" aria-hidden="true"></i> {{ $t('nav.home') }}
             </router-link>
           </li>
@@ -50,9 +50,9 @@
             </router-link>
           </li>
           <li class="nav-item" v-if="loggedIn">
-            <router-link class="nav-link text-danger" :to="{name:'home'}" @click.native="logout">
+            <a class="nav-link text-danger" href="#" @click.prevent="logout">
               <i class="fa fa-sign-out" aria-hidden="true"></i> {{ $t('nav.logout') }}
-            </router-link>
+            </a>
           </li>
           <b-nav-item-dropdown class="text-muted" right no-caret>
             <template slot="button-content">

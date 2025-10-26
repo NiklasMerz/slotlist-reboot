@@ -94,7 +94,7 @@ def get_community(request, slug: str):
     }
 
 
-@router.post('/')
+@router.post('/', response={200: dict, 403: dict})
 def create_community(request, payload: CommunityCreateSchema):
     """Create a new community"""
     permissions = request.auth.get('permissions', [])
@@ -109,9 +109,9 @@ def create_community(request, payload: CommunityCreateSchema):
         tag=payload.tag,
         slug=slug,
         website=payload.website,
-        game_servers=payload.game_servers,
-        voice_comms=payload.voice_comms,
-        repositories=payload.repositories
+        game_servers=payload.game_servers or [],
+        voice_comms=payload.voice_comms or [],
+        repositories=payload.repositories or []
     )
     
     return {
@@ -131,7 +131,7 @@ def create_community(request, payload: CommunityCreateSchema):
     }
 
 
-@router.patch('/{slug}')
+@router.patch('/{slug}', response={200: dict, 403: dict})
 def update_community(request, slug: str, payload: CommunityUpdateSchema):
     """Update a community"""
     permissions = request.auth.get('permissions', [])
@@ -197,7 +197,7 @@ def update_community(request, slug: str, payload: CommunityUpdateSchema):
     }
 
 
-@router.delete('/{slug}')
+@router.delete('/{slug}', response={200: dict, 403: dict})
 def delete_community(request, slug: str):
     """Delete a community"""
     permissions = request.auth.get('permissions', [])

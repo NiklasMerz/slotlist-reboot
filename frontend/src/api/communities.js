@@ -8,7 +8,7 @@ export const v1 = {
     return axios.get(`/v1/communities/slugAvailable?slug=${missionSlug}`)
   },
   createCommunity(payload) {
-    return axios.post('/v1/communities', payload)
+    return axios.post('/v1/communities/', payload)
   },
   createCommunityPermission(communitySlug, payload) {
     return axios.post(`/v1/communities/${communitySlug}/permissions`, payload)

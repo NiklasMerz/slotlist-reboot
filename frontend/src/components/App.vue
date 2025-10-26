@@ -94,6 +94,7 @@
           </div>
           <div class="col">
             <span class="text-muted small float-right">
+              <router-link to="/faq">{{ $t('nav.faq') }}</router-link> |
               <router-link to="/about">{{ $t('nav.about') }}</router-link> |
               <router-link to="/imprint">{{ $t('nav.imprint') }}</router-link> |
               <router-link to="/privacy">{{ $t('nav.privacy') }}</router-link> |

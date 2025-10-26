@@ -2,6 +2,7 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import store from '../store'
 import Home from '../views/Home'
+import FAQ from '../views/FAQ'
 import CommunityList from '../views/CommunityList'
 import CommunityDetails from '../views/CommunityDetails'
 import CommunityCreator from '../views/CommunityCreator'
@@ -31,6 +32,11 @@ export const router = new Router({
       path: '/',
       name: 'home',
       component: Home
+    },
+    {
+      path: '/faq',
+      name: 'faq',
+      component: FAQ
     },
     {
       path: '/communities',

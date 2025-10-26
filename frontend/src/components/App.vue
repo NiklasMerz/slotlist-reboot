@@ -54,14 +54,14 @@
               <i class="fa fa-sign-out" aria-hidden="true"></i> {{ $t('nav.logout') }}
             </router-link>
           </li>
-          <li class="nav-item dropdown">
-            <a id="navbarLanguageDropdown" class="nav-link dropdown-toggle text-muted" href="#" data-toggle="dropdown" aria-expanded="false" v-html="selectedLanguage"></a>
-            <div class="dropdown-menu" aria-labelledby="navbarLanguageDropdown">
-              <a class="dropdown-item text-muted" href="#" @click.prevent="setLocale('en')"><img src="/img/flags/gb.png"> English</a>
-              <a class="dropdown-item text-muted" href="#" @click.prevent="setLocale('de')"><img src="/img/flags/de.png"> Deutsch</a>
-              <a class="dropdown-item text-muted" href="#" @click.prevent="setLocale('de-at')"><img src="/img/flags/at.png"> Österreichisch</a>
-            </div>
-          </li>
+          <b-nav-item-dropdown class="text-muted" right no-caret>
+            <template slot="button-content">
+              <span v-html="selectedLanguage"></span>
+            </template>
+            <b-dropdown-item @click="setLocale('en')"><img src="/img/flags/gb.png"> English</b-dropdown-item>
+            <b-dropdown-item @click="setLocale('de')"><img src="/img/flags/de.png"> Deutsch</b-dropdown-item>
+            <b-dropdown-item @click="setLocale('de-at')"><img src="/img/flags/at.png"> Österreichisch</b-dropdown-item>
+          </b-nav-item-dropdown>
         </ul>
       </div>
     </nav>

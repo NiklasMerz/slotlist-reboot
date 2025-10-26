@@ -296,6 +296,43 @@ The command will:
 
 **Note:** Users imported from slotlist.info will have placeholder Steam IDs (`imported_<uuid>`) since the API doesn't expose them.
 
+#### Merge Duplicate Users
+
+Check for duplicate user nicknames and merge imported users with real Steam users:
+
+```bash
+# Check for duplicates (dry-run)
+python manage.py merge_duplicate_users --dry-run
+
+# Preview automatic merging
+python manage.py merge_duplicate_users --dry-run --auto-merge
+
+# Merge imported users into real users
+python manage.py merge_duplicate_users --auto-merge
+```
+
+**Example:**
+```bash
+# Check what duplicates exist
+python manage.py merge_duplicate_users --dry-run
+
+# Merge them automatically
+python manage.py merge_duplicate_users --auto-merge
+```
+
+The command will:
+- Find all nicknames that appear more than once
+- Categorize users as imported (`steam_id` starts with `imported_`) or real
+- Safely merge imported users into real users (when exactly 1 real user exists)
+- Transfer community membership (if target user has none)
+- Transfer slot assignments and registrations
+- Delete imported user accounts after merging
+- Flag cases requiring manual review (multiple real users with same nickname)
+
+**Note:** The real user's Steam ID is always kept. The imported user's community is transferred only if the real user has no community set.
+
+See **[MERGE_USERS.md](MERGE_USERS.md)** for detailed documentation.
+
 ## Architecture
 
 The backend follows a clean architecture pattern:

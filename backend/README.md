@@ -261,6 +261,41 @@ python manage.py migrate
 ### Django Admin
 The Django admin interface is available at `http://localhost:8000/admin/` with full access to all models for easy data management.
 
+### Management Commands
+
+#### Import Mission from slotlist.info
+
+Import missions from the old slotlist.info system:
+
+```bash
+# Preview import (dry-run)
+python manage.py import_mission <mission-slug> --dry-run
+
+# Import mission
+python manage.py import_mission <mission-slug>
+
+# Import with custom creator (optional)
+python manage.py import_mission <mission-slug> --creator-uid <user-uuid>
+```
+
+**Example:**
+```bash
+# Preview the import
+python manage.py import_mission bf-mm-20251028 --dry-run
+
+# Actually import it
+python manage.py import_mission bf-mm-20251028
+```
+
+The command will:
+- Fetch mission data from `https://api.slotlist.info/v1/missions/<slug>`
+- Fetch slot data from `https://api.slotlist.info/v1/missions/<slug>/slots`
+- Create or update communities, users, slot groups, and slots
+- Preserve UUIDs from the original system
+- Create slot registrations for assigned users
+
+**Note:** Users imported from slotlist.info will have placeholder Steam IDs (`imported_<uuid>`) since the API doesn't expose them.
+
 ## Architecture
 
 The backend follows a clean architecture pattern:

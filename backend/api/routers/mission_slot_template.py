@@ -10,8 +10,8 @@ router = Router()
 
 class MissionSlotTemplateCreateSchema(Schema):
     title: str
-    slot_groups: ListType[Any]
-    community_uid: Optional[UUID] = None
+    slotGroups: ListType[Any]
+    communityUid: Optional[UUID] = None
 
 
 @router.get('/', auth=None)
@@ -89,25 +89,41 @@ def get_mission_slot_template(request, uid: UUID):
 @router.post('/')
 def create_mission_slot_template(request, payload: MissionSlotTemplateCreateSchema):
     """Create a new mission slot template"""
+    if not request.auth:
+        return 401, {'detail': 'Authentication required'}
+    
     user_uid = request.auth.get('user', {}).get('uid')
+    if not user_uid:
+        return 401, {'detail': 'Invalid authentication'}
+    
     user = get_object_or_404(User, uid=user_uid)
     
     community = None
-    if payload.community_uid:
-        community = get_object_or_404(Community, uid=payload.community_uid)
+    if payload.communityUid:
+        community = get_object_or_404(Community, uid=payload.communityUid)
     
     template = MissionSlotTemplate.objects.create(
         title=payload.title,
-        slot_groups=payload.slot_groups,
+        slot_groups=payload.slotGroups,
         creator=user,
         community=community
     )
+    
+    # Ensure slot groups have slots arrays
+    slot_groups = template.slot_groups or []
+    slot_groups_copy = []
+    for group in slot_groups:
+        if isinstance(group, dict):
+            group_copy = dict(group)
+            if 'slots' not in group_copy:
+                group_copy['slots'] = []
+            slot_groups_copy.append(group_copy)
     
     return {
         'slotTemplate': {
             'uid': str(template.uid),
             'title': template.title,
-            'slotGroups': template.slot_groups,
+            'slotGroups': slot_groups_copy,
             'creator': {
                 'uid': str(template.creator.uid),
                 'nickname': template.creator.nickname,

@@ -87,8 +87,8 @@
           </div>
           <div class="col text-center">
             <span class="text-muted small">
-              Made with
-              <i class="fa fa-heart" aria-hidden="true"></i> by
+              Forked with
+              <i class="fa fa-heart" aria-hidden="true"></i> by Black Forest from
               <a href="https://github.com/MorpheusXAUT">MorpheusXAUT</a>
             </span>
           </div>

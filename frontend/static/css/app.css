@@ -1,30 +1,32 @@
+/* App-specific overrides for modern design */
+
 html {
   position: relative;
   min-height: 100%;
 }
 
 body {
-  /* Margin bottom by footer height plus extra spacing */
-  margin-bottom: 75px;
+  margin-bottom: 0;
+}
+
+#app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+#app > .container:first-of-type,
+#app > div:first-of-type {
+  flex: 1;
 }
 
 .footer {
-  position: absolute;
-  bottom: 0;
-  width: 100%;
-  /* Set fixed height of footer */
-  height: 60px;
-  line-height: 60px;
-  background-color: #f5f5f5;
-}
-
-.footer>.container {
-  padding-right: 15px;
-  padding-left: 15px;
+  margin-top: auto;
 }
 
 .white-overlay {
-  background-color: rgba(255, 255, 255, 0.75);
+  background-color: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(4px);
   z-index: 9999;
   top: 0;
   left: 0;
@@ -42,7 +44,8 @@ body {
 }
 
 .word-wrap {
-  word-break: break-all;
+  word-break: break-word;
   word-wrap: break-word;
   white-space: normal;
 }
+

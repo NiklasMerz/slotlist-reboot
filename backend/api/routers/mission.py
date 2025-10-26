@@ -303,6 +303,11 @@ def update_mission(request, slug: str, payload: MissionUpdateSchema):
         mission.title = payload.title
     if payload.description is not None:
         mission.description = payload.description
+        mission.short_description = payload.description  # Keep short_description in sync
+    if payload.detailed_description is not None:
+        mission.detailed_description = payload.detailed_description
+    if payload.collapsed_description is not None:
+        mission.collapsed_description = payload.collapsed_description
     if payload.briefing_time is not None:
         mission.briefing_time = payload.briefing_time
     if payload.slotting_time is not None:
@@ -314,8 +319,10 @@ def update_mission(request, slug: str, payload: MissionUpdateSchema):
     if payload.visibility is not None:
         mission.visibility = payload.visibility
     
-    # Handle tech_teleport and tech_respawn conversion to tech_support
-    if payload.tech_teleport is not None or payload.tech_respawn is not None:
+    # Handle tech_support - can be set directly or via tech_teleport/tech_respawn
+    if payload.tech_support is not None:
+        mission.tech_support = payload.tech_support
+    elif payload.tech_teleport is not None or payload.tech_respawn is not None:
         # Get current tech_support settings
         current_teleport = mission.tech_support and 'teleport' in mission.tech_support.lower() if mission.tech_support else False
         current_respawn = mission.tech_support and 'respawn' in mission.tech_support.lower() if mission.tech_support else False

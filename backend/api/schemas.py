@@ -146,11 +146,14 @@ class MissionCreateSchema(Schema):
 class MissionUpdateSchema(Schema):
     title: Optional[str] = None
     description: Optional[str] = None
+    detailed_description: Optional[str] = Field(None, alias='detailedDescription')
+    collapsed_description: Optional[str] = Field(None, alias='collapsedDescription')
     briefing_time: Optional[datetime] = Field(None, alias='briefingTime')
     slotting_time: Optional[datetime] = Field(None, alias='slottingTime')
     start_time: Optional[datetime] = Field(None, alias='startTime')
     end_time: Optional[datetime] = Field(None, alias='endTime')
     visibility: Optional[str] = None
+    tech_support: Optional[str] = Field(None, alias='techSupport')
     tech_teleport: Optional[bool] = Field(None, alias='techTeleport')
     tech_respawn: Optional[bool] = Field(None, alias='techRespawn')
     details_map: Optional[str] = Field(None, alias='detailsMap')

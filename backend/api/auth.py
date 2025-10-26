@@ -8,7 +8,14 @@ from api.models import User, Permission
 
 def generate_jwt(user: User) -> str:
     """Generate a JWT token for a user"""
+    from api.models import Mission
+    
     permissions = list(Permission.objects.filter(user=user).values_list('permission', flat=True))
+    
+    # Add dynamic creator permissions for missions created by this user
+    created_missions = Mission.objects.filter(creator=user).values_list('slug', flat=True)
+    for mission_slug in created_missions:
+        permissions.append(f'mission.{mission_slug}.creator')
     
     payload = {
         'user': {

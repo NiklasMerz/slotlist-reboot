@@ -7,7 +7,7 @@ from django.utils.text import slugify
 from pydantic import BaseModel
 from api.models import Mission, Community, User, MissionSlotGroup, MissionSlot, ArmaThreeDLC, MissionSlotRegistration
 from api.schemas import MissionSchema, MissionCreateSchema, MissionUpdateSchema
-from api.auth import has_permission
+from api.auth import has_permission, generate_jwt
 
 router = Router()
 
@@ -242,7 +242,11 @@ def create_mission(request, payload: MissionCreateSchema):
         community=community
     )
     
+    # Generate a new JWT token with the creator permission for this mission
+    new_token = generate_jwt(user)
+    
     return {
+        'token': new_token,  # Return updated token with mission.{slug}.creator permission
         'mission': {
             'uid': mission.uid,
             'slug': mission.slug,

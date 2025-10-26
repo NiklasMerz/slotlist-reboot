@@ -581,7 +581,7 @@ const actions = {
       type: 'clearMissionSlotSelection'
     })
   },
-  createMission({ dispatch }, payload) {
+  createMission({ dispatch, commit }, payload) {
     dispatch('startWorking', i18n.t('store.createMission'))
 
     return MissionsApi.createMission(payload)
@@ -599,6 +599,16 @@ const actions = {
         if (_.isNil(response.data.mission) || !_.isObject(response.data.mission)) {
           console.error(response)
           throw 'Received invalid mission'
+        }
+
+        // Update token if backend provided a new one with creator permissions
+        if (response.data.token) {
+          const jwtDecode = require('jwt-decode')
+          const decodedToken = jwtDecode(response.data.token)
+          commit('setToken', {
+            token: response.data.token,
+            decodedToken: decodedToken
+          })
         }
 
         dispatch('showAlert', {

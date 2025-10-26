@@ -16,7 +16,8 @@ const limits = {
 
 const intervals = {
   missionsRefresh: 300000,
-  missionsForCalendarRefresh: 300000
+  missionsForCalendarRefresh: 300000,
+  missionsForAgendaRefresh: 300000
 }
 
 const state = {
@@ -29,6 +30,8 @@ const state = {
   missionPermissions: null,
   missionToken: null,
   missions: null,
+  missionsForAgenda: null,
+  missionsForAgendaRefreshSetInterval: null,
   missionsForCalendar: null,
   missionsForCalendarRefreshSetInterval: null,
   missionSlotDetails: null,
@@ -43,6 +46,7 @@ const state = {
   missionSlugAvailable: false,
   missionsRefreshSetInterval: null,
   refreshingMissions: false,
+  refreshingMissionsForAgenda: false,
   refreshingMissionsForCalendar: false,
   searchingMissions: false,
   totalMissionAccesses: 0,
@@ -128,6 +132,15 @@ const getters = {
   },
   missionsForCalendarRefreshSetInterval() {
     return state.missionsForCalendarRefreshSetInterval
+  },
+  missionsForAgenda() {
+    return state.missionsForAgenda
+  },
+  missionsForAgendaRefreshSetInterval() {
+    return state.missionsForAgendaRefreshSetInterval
+  },
+  refreshingMissionsForAgenda() {
+    return state.refreshingMissionsForAgenda
   },
   missionSlotDetails() {
     return state.missionSlotDetails
@@ -2184,6 +2197,90 @@ const actions = {
         }
       })
   },
+  getMissionsForAgenda({ commit, dispatch, state }, payload) {
+    commit({
+      type: 'refreshingMissionsForAgenda',
+      refreshing: true
+    })
+
+    if (_.isNil(payload)) {
+      payload = { autoRefresh: false }
+    }
+    if (_.isNil(payload.autoRefresh)) {
+      payload.autoRefresh = false
+    }
+
+    const startDate = moment().startOf('day')
+    const endDate = moment().add(1, 'month').endOf('day')
+
+    return MissionsApi.getMissionsForCalendar(startDate.valueOf(), endDate.valueOf())
+      .then(function (response) {
+        if (response.status !== 200) {
+          console.error(response)
+          throw 'Retrieving missions for agenda failed'
+        }
+
+        if (!_.isArray(response.data)) {
+          console.error(response)
+          throw 'Received invalid missions array'
+        }
+
+        commit({
+          type: 'setMissionsForAgenda',
+          missions: response.data
+        })
+
+        commit({
+          type: 'refreshingMissionsForAgenda',
+          refreshing: false
+        })
+
+        if (payload.autoRefresh) {
+          if (!_.isNil(state.missionsForAgendaRefreshSetInterval)) {
+            clearInterval(state.missionsForAgendaRefreshSetInterval)
+          }
+
+          state.missionsForAgendaRefreshSetInterval = setInterval(() => {
+            dispatch('getMissionsForAgenda', { autoRefresh: true })
+          }, intervals.missionsForAgendaRefresh)
+        }
+      }).catch((error) => {
+        commit({
+          type: 'refreshingMissionsForAgenda',
+          refreshing: false
+        })
+
+        commit({
+          type: 'setMissionsForAgenda',
+          missions: []
+        })
+
+        if (error.response) {
+          console.error('getMissionsForAgenda', error.response)
+          dispatch('showAlert', {
+            showAlert: true,
+            alertVariant: 'danger',
+            alertMessage: `<i class="fa fa-bolt" aria-hidden="true"></i> ${i18n.t('store.getMissionsForAgenda.error')} - ${error.response.data.message}`
+          })
+        } else if (error.request) {
+          error.message !== "Network Error" ? Raven.captureException(error, { extra: { module: 'missions', function: 'getMissionsForAgenda' } }) : null
+          console.error('getMissionsForAgenda', error.request)
+          dispatch('showAlert', {
+            showAlert: true,
+            alertVariant: 'danger',
+            alertMessage: `<i class="fa fa-bolt" aria-hidden="true"></i> ${i18n.t('store.getMissionsForAgenda.error')} - ${i18n.t('failed.request')}`
+          })
+        } else {
+          error.message !== "Network Error" ? Raven.captureException(error, { extra: { module: 'missions', function: 'getMissionsForAgenda' } }) : null
+          console.error('getMissionsForAgenda', error.message)
+          dispatch('showAlert', {
+            showAlert: true,
+            alertVariant: 'danger',
+            alertMessage: `<i class="fa fa-bolt" aria-hidden="true"></i> ${i18n.t('store.getMissionsForAgenda.error')} - ${i18n.t('failed.something')}`
+          })
+        }
+      })
+  },
   getMissionSlotlist({ commit, dispatch }, payload) {
     dispatch('startWorking', i18n.t('store.getMissionSlotlist'))
 
@@ -2851,6 +2948,9 @@ const mutations = {
   refreshingMissionsForCalendar(state, payload) {
     state.refreshingMissionsForCalendar = payload.refreshing
   },
+  refreshingMissionsForAgenda(state, payload) {
+    state.refreshingMissionsForAgenda = payload.refreshing
+  },
   searchingMissions(state, payload) {
     state.searchingMissions = payload.searching
   },
@@ -2889,6 +2989,9 @@ const mutations = {
   },
   setMissionsForCalendar(state, payload) {
     state.missionsForCalendar = payload.missions
+  },
+  setMissionsForAgenda(state, payload) {
+    state.missionsForAgenda = payload.missions
   },
   setMissionSlugAvailability(state, payload) {
     state.checkingMissionSlugAvailability = false

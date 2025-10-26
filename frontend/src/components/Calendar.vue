@@ -6,8 +6,13 @@
           <h3>{{ $t('calendar.title') }}</h3>
         </div>
         <div class="card-block">
-          <calendar-header></calendar-header>
-          <calendar-body></calendar-body>
+          <div class="calendar-view-desktop">
+            <calendar-header></calendar-header>
+            <calendar-body></calendar-body>
+          </div>
+          <div class="calendar-view-mobile">
+            <calendar-agenda></calendar-agenda>
+          </div>
           <div class="small text-center" v-html="$t('mission.timezone', { timezone: timezone })"></div>
         </div>
       </div>
@@ -19,11 +24,13 @@
 import moment from 'moment-timezone'
 import CalendarBody from './calendar/CalendarBody.vue'
 import CalendarHeader from './calendar/CalendarHeader.vue'
+import CalendarAgenda from './calendar/CalendarAgenda.vue'
 
 export default {
   components: {
     CalendarBody,
-    CalendarHeader
+    CalendarHeader,
+    CalendarAgenda
   },
   beforeCreate: function() {
     if (_.isNil(this.$store.getters.missionsForCalendar)) {
@@ -40,3 +47,23 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+.calendar-view-desktop {
+  display: none;
+}
+
+.calendar-view-mobile {
+  display: block;
+}
+
+@media (min-width: 768px) {
+  .calendar-view-desktop {
+    display: block;
+  }
+  
+  .calendar-view-mobile {
+    display: none;
+  }
+}
+</style>

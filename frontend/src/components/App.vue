@@ -99,10 +99,8 @@
               <router-link to="/imprint">{{ $t('nav.imprint') }}</router-link> |
               <router-link to="/privacy">{{ $t('nav.privacy') }}</router-link> |
               <router-link to="/api">{{ $t('nav.api') }}</router-link> |
-              <a href="https://github.com/MorpheusXAUT/slotlist-frontend">
-                <i class="fa fa-github"></i> Frontend</a> |
-              <a href="https://github.com/MorpheusXAUT/slotlist-backend">
-                <i class="fa fa-github"></i> Backend</a>
+              <a href="https://github.com/Black-Forest-Community/slotlist-reboot">
+                <i class="fa fa-github"></i> Source Code</a> |
             </span>
           </div>
         </div>

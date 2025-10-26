@@ -4,13 +4,7 @@
     <h4>Offenlegung</h4>
     <p class="text-justify">
       <address>
-        <strong>Nick 'MorpheusXAUT' Müller</strong>
-        <br>Bergmillergasse 8/2/13
-        <br>1140, Wien
-        <br>Österreich
-        <br>
-        <br>Email:
-        <a href="mailto:nick@slotlist.online?subject=slotlist.online - rechliche Anfrage">nick@slotlist.online</a>
+        TODO
       </address>
     </p>
     <br>

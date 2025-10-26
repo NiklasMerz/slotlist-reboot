@@ -4,13 +4,7 @@
     <h4>Legal disclosure</h4>
     <p class="text-justify">
       <address>
-        <strong>Nick 'MorpheusXAUT' Müller</strong>
-        <br>Bergmillergasse 8/2/13
-        <br>1140, Vienna
-        <br>Austria
-        <br>
-        <br>Email:
-        <a href="mailto:nick@slotlist.online?subject=slotlist.online - legal inquiry">nick@slotlist.online</a>
+        TODO
       </address>
     </p>
     <br>

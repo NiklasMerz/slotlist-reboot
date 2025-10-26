@@ -10,21 +10,11 @@
     </p>
     <h4>Entwicklung</h4>
     <p class="text-justify">
-      <router-link :to="{name: 'home'}">slotlist.online</router-link> wird aktuell ausschließlich von
-      <a href="https://github.com/MorpheusXAUT">MorpheusXAUT</a> entwickelt. Die Repostories des Frontend- und Backend-Sourcecodes sowie die aktuell eingesetzten Versionen können unterhalb gefunden werden. Bitte gib diese Informationen in jeglichen Fehlermeldungen an, da es die Fehlersuche erleichtert.
-      <dl class="row">
-        <dt class="col-1">Frontend</dt>
+      <router-link :to="{name: 'home'}">slotlist.online</router-link> wird aktuell von Black Forest entwickelt.
+        <dt class="col-1">Source Code</dt>
         <dd class="col-2">
-          <a href="https://github.com/MorpheusXAUT/slotlist-frontend">
-            <i class="fa fa-github" aria-hidden="true"></i> slotlist-frontend</a>
-        </dd>
-        <dd class="col-9">
-          <span v-show="frontendVersion">{{ frontendVersion }}</span>
-        </dd>
-        <dt class="col-1">Backend</dt>
-        <dd class="col-2">
-          <a href="https://github.com/MorpheusXAUT/slotlist-backend">
-            <i class="fa fa-github" aria-hidden="true"></i> slotlist-backend</a>
+          <a href="https://github.com/Black-Forest-Community/slotlist-reboot">
+            <i class="fa fa-github" aria-hidden="true"></i> slotlist-reboot</a>
         </dd>
         <dd class="col-9">
           <span v-show="backendVersion">{{ backendVersion }}</span>
@@ -43,14 +33,6 @@
         <dt class="col-sm-3">schick uns eine Email</dt>
         <dd class="col-sm-9">
           <a href="mailto:hello@slotlist.online?subject=slotlist.online - Hallo!">hello@slotlist.online</a>
-        </dd>
-        <dt class="col-sm-3">tritt unserem Discord Server bei</dt>
-        <dd class="col-sm-9">
-          <a href="https://discord.gg/QZ5HpwT">Discord</a>
-        </dd>
-        <dt class="col-sm-3">füge den Entwickler als Steam-Freund hinzu</dt>
-        <dd class="col-sm-9">
-          <a href="https://steamcommunity.com/id/morpheusxaut">MorpheusXAUT</a>
         </dd>
       </dl>
       Kontakt-Details für rechtliche Anfrangen können im

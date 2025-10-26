@@ -10,21 +10,15 @@
     </p>
     <h4>Development</h4>
     <p class="text-justify">
-      <router-link :to="{name: 'home'}">slotlist.online</router-link> is currently solely developed by
-      <a href="https://github.com/MorpheusXAUT">MorpheusXAUT</a>. The website's frontend and backend source code repositories as well as the current versions deployed can be found below. Please include this information is bug reports as it helps with narrowing down issues.
+      <router-link :to="{name: 'home'}">slotlist.online</router-link> is currently developed by Black Forest.
       <dl class="row">
-        <dt class="col-1">frontend</dt>
-        <dd class="col-2">
-          <a href="https://github.com/MorpheusXAUT/slotlist-frontend">
-            <i class="fa fa-github" aria-hidden="true"></i> slotlist-frontend</a>
-        </dd>
         <dd class="col-9">
           <span v-show="frontendVersion">{{ frontendVersion }}</span>
         </dd>
-        <dt class="col-1">backend</dt>
+        <dt class="col-1">Source Code</dt>
         <dd class="col-2">
-          <a href="https://github.com/MorpheusXAUT/slotlist-backend">
-            <i class="fa fa-github" aria-hidden="true"></i> slotlist-backend</a>
+          <a href="https://github.com/Black-Forest-Community/slotlist-reboot">
+            <i class="fa fa-github" aria-hidden="true"></i> slotlist-reboot</a>
         </dd>
         <dd class="col-9">
           <span v-show="backendVersion">{{ backendVersion }}</span>
@@ -38,19 +32,11 @@
       <dl class="row">
         <dt class="col-sm-3">open an issue on GitHub</dt>
         <dd class="col-sm-9">
-          <a href="https://github.com/MorpheusXAUT/slotlist-frontend/issues">issue tracker</a>
+          <a href="https://github.com/Black-Forest-Community/slotlist-reboot/issues">issue tracker</a>
         </dd>
         <dt class="col-sm-3">email us directly</dt>
         <dd class="col-sm-9">
           <a href="mailto:hello@slotlist.online?subject=slotlist.online - Hello!">hello@slotlist.online</a>
-        </dd>
-        <dt class="col-sm-3">join our Discord server</dt>
-        <dd class="col-sm-9">
-          <a href="https://discord.gg/QZ5HpwT">Discord</a>
-        </dd>
-        <dt class="col-sm-3">add the developer on Steam</dt>
-        <dd class="col-sm-9">
-          <a href="https://steamcommunity.com/id/morpheusxaut">MorpheusXAUT</a>
         </dd>
       </dl>
       Contact details for legal inquiries can be found on the

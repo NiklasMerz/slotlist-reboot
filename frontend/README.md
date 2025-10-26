@@ -1,6 +1,4 @@
 # slotlist-frontend
-Frontend of [slotlist.online](https://slotlist.online), an ArmA 3 mission planning and slotlist management tool.  
-The corresponding backend implementation of this project can be found at [slotlist-backend](https://github.com/MorpheusXAUT/slotlist-backend).
 
 ## 📢 Project Status: Discontinued
 

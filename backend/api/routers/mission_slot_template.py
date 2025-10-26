@@ -14,6 +14,12 @@ class MissionSlotTemplateCreateSchema(Schema):
     communityUid: Optional[UUID] = None
 
 
+class MissionSlotTemplateUpdateSchema(Schema):
+    title: Optional[str] = None
+    slotGroups: Optional[ListType[Any]] = None
+    communityUid: Optional[UUID] = None
+
+
 @router.get('/', auth=None)
 def list_mission_slot_templates(request, limit: int = 25, offset: int = 0):
     """List all mission slot templates with pagination"""
@@ -157,3 +163,63 @@ def delete_mission_slot_template(request, uid: UUID):
     
     template.delete()
     return {'success': True}
+
+
+@router.patch('/{uid}', response={200: dict, 401: dict, 403: dict})
+def update_mission_slot_template(request, uid: UUID, payload: MissionSlotTemplateUpdateSchema):
+    """Update a mission slot template"""
+    if not request.auth:
+        return 401, {'detail': 'Authentication required'}
+    
+    template = get_object_or_404(MissionSlotTemplate, uid=uid)
+    
+    # Check permissions
+    user_uid = request.auth.get('user', {}).get('uid')
+    permissions = request.auth.get('permissions', [])
+    
+    is_creator = str(template.creator.uid) == user_uid
+    is_admin = has_permission(permissions, 'admin.slotTemplate')
+    
+    if not is_creator and not is_admin:
+        return 403, {'detail': 'Forbidden'}
+    
+    # Update fields
+    if payload.title is not None:
+        template.title = payload.title
+    if payload.slotGroups is not None:
+        template.slot_groups = payload.slotGroups
+    if payload.communityUid is not None:
+        community = get_object_or_404(Community, uid=payload.communityUid)
+        template.community = community
+    
+    template.save()
+    
+    # Ensure slot groups have slots arrays
+    slot_groups = template.slot_groups or []
+    slot_groups_copy = []
+    for group in slot_groups:
+        if isinstance(group, dict):
+            group_copy = dict(group)
+            if 'slots' not in group_copy:
+                group_copy['slots'] = []
+            slot_groups_copy.append(group_copy)
+    
+    return {
+        'slotTemplate': {
+            'uid': str(template.uid),
+            'title': template.title,
+            'slotGroups': slot_groups_copy,
+            'creator': {
+                'uid': str(template.creator.uid),
+                'nickname': template.creator.nickname,
+            },
+            'community': {
+                'uid': str(template.community.uid),
+                'name': template.community.name,
+                'tag': template.community.tag,
+                'slug': template.community.slug,
+            } if template.community else None,
+            'createdAt': template.created_at.isoformat() if template.created_at else None,
+            'updatedAt': template.updated_at.isoformat() if template.updated_at else None,
+        }
+    }

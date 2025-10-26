@@ -2,7 +2,7 @@ import axios from 'axios'
 
 export const v1 = {
   createMissionSlotTemplate(payload) {
-    return axios.post('/v1/missionSlotTemplates', payload)
+    return axios.post('/v1/missionSlotTemplates/', payload)
   },
   deleteMissionSlotTemplate(missionSlotTemplateUid) {
     return axios.delete(`/v1/missionSlotTemplates/${missionSlotTemplateUid}`)

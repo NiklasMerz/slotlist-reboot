@@ -35,9 +35,15 @@ export default {
   components: {
     MissionListRow
   },
+  props: {
+    missionsOverride: {
+      type: Array,
+      default: null
+    }
+  },
   computed: {
     missions() {
-      return this.$store.getters.missions
+      return this.missionsOverride || this.$store.getters.missions
     }
   }
 }

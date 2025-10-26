@@ -26,22 +26,18 @@
     <td v-if="hasAnyMissionSlotDescription">{{ missionSlotDetails.description }}</td>
     <td class="text-center">
       <div class="btn-group btn-group-sm" role="group" aria-label="Mission slot actions">
-        <b-btn variant="primary" @click="prepareMissionSlotDetails" v-b-modal.missionSlotDetailsModal>
+        <b-btn variant="primary" size="sm" @click="prepareMissionSlotDetails" v-b-modal.missionSlotDetailsModal>
           <i class="fa fa-info" aria-hidden="true"></i> {{ $t('button.details') }}
         </b-btn>
-        <b-btn variant="success" v-if="loggedIn && !missionSlotDetails.registrationUid && !hasMissionEnded" :disabled="missionSlotDetails.blocked || !canRegisterForSlot" @click="setMissionSlotDetails" v-b-modal.missionSlotRegistrationModal>
+        <b-btn variant="success" size="sm" v-if="loggedIn && !missionSlotDetails.registrationUid && !hasMissionEnded" :disabled="missionSlotDetails.blocked || !canRegisterForSlot" @click="setMissionSlotDetails" v-b-modal.missionSlotRegistrationModal>
           <i class="fa fa-ticket" aria-hidden="true"></i> {{ $t('button.register') }}
         </b-btn>
-        <click-confirm v-if="loggedIn && missionSlotDetails.registrationUid && !hasMissionEnded" yes-icon="fa fa-eraser" yes-class="btn btn-warning" button-size="sm" :messages="{title: $t('mission.slot.confirm.unregister'), yes: $t('button.confirm'), no: $t('button.cancel')}">
-          <b-btn variant="warning" size="sm" @click="deleteMissionSlotRegistration">
-            <i class="fa fa-eraser" aria-hidden="true"></i> {{ $t('button.unregister') }}
-          </b-btn>
-        </click-confirm>
-        <click-confirm v-if="isMissionEditor && !hasMissionEnded" yes-icon="fa fa-trash" yes-class="btn btn-danger" button-size="sm" :messages="{title: $t('mission.slot.confirm.delete'), yes: $t('button.confirm'), no: $t('button.cancel')}">
-          <b-btn variant="danger" size="sm" @click="deleteMissionSlot">
-            <i class="fa fa-trash" aria-hidden="true"></i> {{ $t('button.delete') }}
-          </b-btn>
-        </click-confirm>
+        <b-btn variant="warning" size="sm" v-if="loggedIn && missionSlotDetails.registrationUid && !hasMissionEnded" @click="confirmUnregister">
+          <i class="fa fa-eraser" aria-hidden="true"></i> {{ $t('button.unregister') }}
+        </b-btn>
+        <b-btn variant="danger" size="sm" v-if="isMissionEditor && !hasMissionEnded" @click="confirmDelete">
+          <i class="fa fa-trash" aria-hidden="true"></i> {{ $t('button.delete') }}
+        </b-btn>
       </div>
     </td>
   </tr>
@@ -154,6 +150,16 @@ export default {
     }
   },
   methods: {
+    confirmDelete() {
+      if (confirm(this.$t('mission.slot.confirm.delete'))) {
+        this.deleteMissionSlot()
+      }
+    },
+    confirmUnregister() {
+      if (confirm(this.$t('mission.slot.confirm.unregister'))) {
+        this.deleteMissionSlotRegistration()
+      }
+    },
     deleteMissionSlot() {
       this.$store.dispatch('deleteMissionSlot', {
         missionSlug: this.$route.params.missionSlug,

@@ -1,6 +1,18 @@
 <template>
   <div>
-    <mission-list-table v-if="missions"></mission-list-table>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h2 class="m-0">{{ $t('nav.missions') }}</h2>
+      <div style="max-width: 300px; flex: 1; margin-left: 2rem;">
+        <input 
+          type="search" 
+          class="form-control" 
+          v-model="searchQuery" 
+          :placeholder="$t('mission.list.search')"
+        />
+      </div>
+    </div>
+    
+    <mission-list-table v-if="filteredMissions" :missions-override="filteredMissions"></mission-list-table>
     <nav v-show="missionsPageCount > 1">
       <paginate ref="missionsPaginate" :pageCount="missionsPageCount" :initial-page="0" :clickHandler="missionsPaginate" :container-class="'pagination justify-content-center'" :page-class="'page-item'" :page-link-class="'page-link'" :prev-class="'page-item'" :prev-link-class="'page-link'" :next-class="'page-item'" :next-link-class="'page-link'"></paginate>
     </nav>
@@ -75,15 +87,6 @@
         <i class="fa fa-refresh" :class="{'fa-spin': refreshingMissions}" aria-hidden="true"></i> {{ $t('button.refresh') }}
       </b-btn>
     </div>
-    <br>
-    <div class="row justify-content-center">
-      <div class="col-4 text-center">
-        <h6>{{ $t('mission.list.search') }}</h6>
-        <b-form-fieldset :description="$t('mission.list.search.description')">
-          <typeahead ref="missionSearchTypeahead" action="searchMissions" actionIndicator="searchingMissions" :onHit="missionSelected"></typeahead>
-        </b-form-fieldset>
-      </div>
-    </div>
   </div>
 </template>
 
@@ -110,10 +113,30 @@ export default {
   data() {
     return {
       missionListFilter: [],
-      missionListRequiredDLCsFilter: []
+      missionListRequiredDLCsFilter: [],
+      searchQuery: ''
     }
   },
   computed: {
+    filteredMissions() {
+      if (!this.missions) {
+        return null
+      }
+      
+      if (!this.searchQuery || this.searchQuery.trim() === '') {
+        return this.missions
+      }
+      
+      const query = this.searchQuery.toLowerCase().trim()
+      return this.missions.filter(mission => {
+        return (
+          (mission.title && mission.title.toLowerCase().includes(query)) ||
+          (mission.slug && mission.slug.toLowerCase().includes(query)) ||
+          (mission.community && mission.community.name && mission.community.name.toLowerCase().includes(query)) ||
+          (mission.community && mission.community.tag && mission.community.tag.toLowerCase().includes(query))
+        )
+      })
+    },
     haveMissionsAnyRequiredDLCs() {
       if (_.isNil(this.missions)) {
         return false

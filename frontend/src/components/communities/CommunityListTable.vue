@@ -31,9 +31,15 @@ export default {
   components: {
     CommunityListRow
   },
+  props: {
+    communitiesOverride: {
+      type: Array,
+      default: null
+    }
+  },
   computed: {
     communities() {
-      return this.$store.getters.communities
+      return this.communitiesOverride || this.$store.getters.communities
     }
   }
 }

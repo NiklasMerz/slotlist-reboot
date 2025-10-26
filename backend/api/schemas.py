@@ -123,6 +123,8 @@ class MissionCreateSchema(Schema):
     title: str
     slug: Optional[str] = None
     description: Optional[str] = ''
+    detailed_description: Optional[str] = Field('', alias='detailedDescription')
+    collapsed_description: Optional[str] = Field(None, alias='collapsedDescription')
     briefing_time: Optional[datetime] = Field(None, alias='briefingTime')
     slotting_time: Optional[datetime] = Field(None, alias='slottingTime')
     start_time: Optional[datetime] = Field(None, alias='startTime')

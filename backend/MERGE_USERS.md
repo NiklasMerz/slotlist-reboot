@@ -43,6 +43,7 @@ python manage.py merge_duplicate_users --auto-merge
 3. **Safe merging**: Only merges when there is exactly ONE real user and one or more imported users
 4. **Transfers data**:
    - Community membership (if target user has no community)
+   - Missions created by the user (`Mission.creator`)
    - Slot assignments (`MissionSlot.assignee`)
    - Slot registrations (`MissionSlotRegistration`)
    - Handles duplicate registrations (deletes duplicates if target user already registered)
@@ -74,18 +75,19 @@ The command provides detailed output showing:
 Found 3 nicknames with duplicates
 
 Nickname: "John Smith" (2 users)
-  [IMPORTED] a1b2c3d4-... - imported_a1b2c3d4-... (slots: 5, registrations: 3, community: example-clan, created: 2024-01-15)
-  [REAL] e5f6g7h8-... - 76561198012345678 (slots: 0, registrations: 0, no community, created: 2024-02-01)
+  [IMPORTED] a1b2c3d4-... - imported_a1b2c3d4-... (slots: 5, registrations: 3, missions: 2, community: example-clan, created: 2024-01-15)
+  [REAL] e5f6g7h8-... - 76561198012345678 (slots: 0, registrations: 0, missions: 0, no community, created: 2024-02-01)
   → Merging 1 imported user(s) into real user e5f6g7h8-...
     Transferred community: Example Clan (example-clan)
+    Transferred 2 mission(s) from a1b2c3d4-...
     Transferred 5 slot assignment(s) from a1b2c3d4-...
     Transferred 3 registration(s) from a1b2c3d4-...
     Deleted imported user a1b2c3d4-...
 
 Nickname: "Jane Doe" (3 users)
-  [IMPORTED] i9j0k1l2-... - imported_i9j0k1l2-... (slots: 2, registrations: 1, community: alpha-team, created: 2024-01-10)
-  [REAL] m3n4o5p6-... - 76561198087654321 (slots: 1, registrations: 2, community: bravo-squad, created: 2024-01-20)
-  [REAL] q7r8s9t0-... - 76561198011111111 (slots: 0, registrations: 0, no community, created: 2024-02-15)
+  [IMPORTED] i9j0k1l2-... - imported_i9j0k1l2-... (slots: 2, registrations: 1, missions: 1, community: alpha-team, created: 2024-01-10)
+  [REAL] m3n4o5p6-... - 76561198087654321 (slots: 1, registrations: 2, missions: 3, community: bravo-squad, created: 2024-01-20)
+  [REAL] q7r8s9t0-... - 76561198011111111 (slots: 0, registrations: 0, missions: 0, no community, created: 2024-02-15)
   ⚠ Multiple real users with same nickname - manual review required
 
 ============================================================

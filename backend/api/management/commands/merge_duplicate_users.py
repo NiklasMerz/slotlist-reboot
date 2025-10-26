@@ -1,7 +1,7 @@
 from django.core.management.base import BaseCommand
 from django.db import transaction
 from django.db.models import Count
-from api.models import User, MissionSlot, MissionSlotRegistration
+from api.models import User, Mission, MissionSlot, MissionSlotRegistration
 
 
 class Command(BaseCommand):
@@ -57,11 +57,12 @@ class Command(BaseCommand):
                 user_type = 'IMPORTED' if is_imported else 'REAL'
                 slot_count = MissionSlot.objects.filter(assignee=user).count()
                 reg_count = MissionSlotRegistration.objects.filter(user=user).count()
+                mission_count = Mission.objects.filter(creator=user).count()
                 community_info = f'community: {user.community.slug}' if user.community else 'no community'
                 
                 self.stdout.write(
                     f'  [{user_type}] {user.uid} - {user.steam_id} '
-                    f'(slots: {slot_count}, registrations: {reg_count}, '
+                    f'(slots: {slot_count}, registrations: {reg_count}, missions: {mission_count}, '
                     f'{community_info}, created: {user.created_at.strftime("%Y-%m-%d")})'
                 )
 
@@ -156,6 +157,15 @@ class Command(BaseCommand):
                     slots.update(assignee=target_user)
                     self.stdout.write(
                         f'    Transferred {slots_count} slot assignment(s) from {imported_user.uid}'
+                    )
+
+                # Transfer missions created by the imported user
+                missions = Mission.objects.filter(creator=imported_user)
+                missions_count = missions.count()
+                if missions_count > 0:
+                    missions.update(creator=target_user)
+                    self.stdout.write(
+                        f'    Transferred {missions_count} mission(s) from {imported_user.uid}'
                     )
 
                 # Transfer registrations (or delete duplicates)

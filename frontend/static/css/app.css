@@ -49,3 +49,21 @@ body {
   white-space: normal;
 }
 
+/* Mobile responsive: make slot action buttons stack vertically */
+@media (max-width: 768px) {
+  .table td .btn-group {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+  }
+  
+  .table td .btn-group .btn {
+    width: 100%;
+    margin-bottom: 0.25rem;
+  }
+  
+  .table td .btn-group .btn:last-child {
+    margin-bottom: 0;
+  }
+}
+

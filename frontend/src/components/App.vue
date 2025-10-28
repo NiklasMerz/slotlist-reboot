@@ -1,51 +1,51 @@
 <template>
   <div id="app">
     <nav class="navbar navbar-toggleable-md navbar-light bg-faded mb-3">
-      <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <button class="navbar-toggler navbar-toggler-right" type="button" @click="navbarCollapsed = !navbarCollapsed" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
       <router-link class="navbar-brand" :to="{name:'home'}">slotlist.online</router-link>
-      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <div class="collapse navbar-collapse" :class="{'show': !navbarCollapsed}" id="navbarSupportedContent" @click="closeNavbar">
         <ul class="navbar-nav mr-auto">
           <li class="nav-item">
-            <router-link class="nav-link" :to="{name:'home'}" exact>
+            <router-link class="nav-link" :to="{name:'home'}" exact @click.native="closeNavbar">
               <i class="fa fa-home" aria-hidden="true"></i> {{ $t('nav.home') }}
             </router-link>
           </li>
           <li class="nav-item">
-            <router-link class="nav-link" :to="{name:'missionList'}">
+            <router-link class="nav-link" :to="{name:'missionList'}" @click.native="closeNavbar">
               <i class="fa fa-tasks" aria-hidden="true"></i> {{ $t('nav.missions') }}
             </router-link>
           </li>
           <li class="nav-item">
-            <router-link class="nav-link" :to="{name:'missionSlotTemplateList'}">
+            <router-link class="nav-link" :to="{name:'missionSlotTemplateList'}" @click.native="closeNavbar">
               <i class="fa fa-file-text-o" aria-hidden="true"></i> {{ $t('nav.missionSlotTemplates') }}
             </router-link>
           </li>
           <li class="nav-item">
-            <router-link class="nav-link" :to="{name:'communityList'}">
+            <router-link class="nav-link" :to="{name:'communityList'}" @click.native="closeNavbar">
               <i class="fa fa-users" aria-hidden="true"></i> {{ $t('nav.communities') }}
             </router-link>
           </li>
           <li class="nav-item">
-            <router-link class="nav-link" :to="{name:'userList'}">
+            <router-link class="nav-link" :to="{name:'userList'}" @click.native="closeNavbar">
               <i class="fa fa-user" aria-hidden="true"></i> {{ $t('nav.users') }}
             </router-link>
           </li>
         </ul>
         <ul class="navbar-nav">
           <li class="nav-item" v-if="loggedIn">
-            <router-link class="nav-link" :class="{'text-danger': unseenNotificationCount > 0, 'font-weight-bold': unseenNotificationCount > 0}" :to="{name:'notificationList'}">
+            <router-link class="nav-link" :class="{'text-danger': unseenNotificationCount > 0, 'font-weight-bold': unseenNotificationCount > 0}" :to="{name:'notificationList'}" @click.native="closeNavbar">
               <i class="fa fa-bell" aria-hidden="true"></i> {{ unseenNotificationCount }} {{ $t('nav.notifications') }}
             </router-link>
           </li>
           <li class="nav-item" v-if="loggedIn">
-            <router-link class="nav-link" :to="{name:'account'}">
+            <router-link class="nav-link" :to="{name:'account'}" @click.native="closeNavbar">
               <i class="fa fa-user" aria-hidden="true"></i> {{ $t('nav.account') }}
             </router-link>
           </li>
           <li class="nav-item" v-if="!loggedIn">
-            <router-link class="nav-link text-primary" :to="{name:'login'}">
+            <router-link class="nav-link text-primary" :to="{name:'login'}" @click.native="closeNavbar">
               <i class="fa fa-sign-in" aria-hidden="true"></i> {{ $t('nav.login') }}
             </router-link>
           </li>
@@ -174,7 +174,8 @@ export default {
   },
   data() {
     return {
-      initialTokenRefresh: true
+      initialTokenRefresh: true,
+      navbarCollapsed: true
     }
   },
   computed: {
@@ -223,7 +224,11 @@ export default {
     alertDismissed() {
       this.$store.dispatch('clearAlert')
     },
+    closeNavbar() {
+      this.navbarCollapsed = true
+    },
     logout() {
+      this.closeNavbar()
       this.$store.dispatch('performLogout')
         .then(() => {
           this.$router.push({ path: '/', query: { logout: true } })

@@ -1,12 +1,17 @@
 from ninja import Router
 from django.shortcuts import get_object_or_404
+from django.db import models
 from typing import List, Optional
 from uuid import UUID
 from datetime import datetime
 from django.utils.text import slugify
 from pydantic import BaseModel
 from api.models import Mission, Community, User, MissionSlotGroup, MissionSlot, ArmaThreeDLC, MissionSlotRegistration
-from api.schemas import MissionSchema, MissionCreateSchema, MissionUpdateSchema
+from api.schemas import (
+    MissionSchema, MissionCreateSchema, MissionUpdateSchema, 
+    MissionSlotGroupCreateSchema, MissionSlotGroupUpdateSchema,
+    MissionSlotCreateSchema, MissionSlotUpdateSchema
+)
 from api.auth import has_permission, generate_jwt
 
 router = Router()
@@ -684,6 +689,336 @@ def unassign_slot(request, slug: str, slot_uid: UUID):
             'assignee': None
         }
     }
+
+
+@router.post('/{slug}/slotGroups', response={200: dict, 400: dict, 403: dict})
+def create_mission_slot_group(request, slug: str, data: MissionSlotGroupCreateSchema):
+    """Create a new slot group for a mission"""
+    mission = get_object_or_404(Mission, slug=slug)
+    
+    # Check permissions
+    user_uid = request.auth.get('user', {}).get('uid')
+    permissions = request.auth.get('permissions', [])
+    
+    is_creator = str(mission.creator.uid) == user_uid
+    is_admin = has_permission(permissions, 'admin.mission')
+    
+    if not is_creator and not is_admin:
+        from ninja.errors import HttpError
+        raise HttpError(403, 'Insufficient permissions to create slot groups for this mission')
+    
+    # Get existing slot groups to determine order numbers
+    existing_groups = list(MissionSlotGroup.objects.filter(mission=mission).order_by('order_number'))
+    
+    # Calculate the new order number based on insertAfter
+    insert_after = data.insertAfter
+    new_order_number = insert_after + 1
+    
+    # Shift order numbers of groups that come after the insert point
+    for group in existing_groups:
+        if group.order_number >= new_order_number:
+            group.order_number += 1
+            group.save()
+    
+    # Create the new slot group
+    slot_group = MissionSlotGroup.objects.create(
+        mission=mission,
+        title=data.title,
+        description=data.description if data.description else '',
+        order_number=new_order_number
+    )
+    
+    return {
+        'slotGroup': {
+            'uid': str(slot_group.uid),
+            'title': slot_group.title,
+            'description': slot_group.description,
+            'orderNumber': slot_group.order_number,
+            'slots': []
+        }
+    }
+
+
+@router.patch('/{slug}/slotGroups/{slot_group_uid}', response={200: dict, 400: dict, 403: dict, 404: dict})
+def update_mission_slot_group(request, slug: str, slot_group_uid: UUID, data: MissionSlotGroupUpdateSchema):
+    """Update a slot group"""
+    mission = get_object_or_404(Mission, slug=slug)
+    
+    # Check permissions
+    user_uid = request.auth.get('user', {}).get('uid')
+    permissions = request.auth.get('permissions', [])
+    
+    is_creator = str(mission.creator.uid) == user_uid
+    is_admin = has_permission(permissions, 'admin.mission')
+    
+    if not is_creator and not is_admin:
+        from ninja.errors import HttpError
+        raise HttpError(403, 'Insufficient permissions to update slot groups for this mission')
+    
+    slot_group = get_object_or_404(MissionSlotGroup, uid=slot_group_uid, mission=mission)
+    
+    # Update fields if provided
+    if data.title is not None:
+        slot_group.title = data.title
+    
+    if data.description is not None:
+        slot_group.description = data.description
+    
+    if data.orderNumber is not None and data.orderNumber != slot_group.order_number:
+        old_order = slot_group.order_number
+        new_order = data.orderNumber
+        
+        # Shift other groups' order numbers
+        if new_order > old_order:
+            # Moving down: shift groups between old and new position up
+            MissionSlotGroup.objects.filter(
+                mission=mission,
+                order_number__gt=old_order,
+                order_number__lte=new_order
+            ).update(order_number=models.F('order_number') - 1)
+        else:
+            # Moving up: shift groups between new and old position down
+            MissionSlotGroup.objects.filter(
+                mission=mission,
+                order_number__gte=new_order,
+                order_number__lt=old_order
+            ).update(order_number=models.F('order_number') + 1)
+        
+        slot_group.order_number = new_order
+    
+    slot_group.save()
+    
+    return {
+        'slotGroup': {
+            'uid': str(slot_group.uid),
+            'title': slot_group.title,
+            'description': slot_group.description,
+            'orderNumber': slot_group.order_number
+        }
+    }
+
+
+@router.delete('/{slug}/slotGroups/{slot_group_uid}', response={200: dict, 403: dict, 404: dict})
+def delete_mission_slot_group(request, slug: str, slot_group_uid: UUID):
+    """Delete a slot group and all its slots"""
+    mission = get_object_or_404(Mission, slug=slug)
+    
+    # Check permissions
+    user_uid = request.auth.get('user', {}).get('uid')
+    permissions = request.auth.get('permissions', [])
+    
+    is_creator = str(mission.creator.uid) == user_uid
+    is_admin = has_permission(permissions, 'admin.mission')
+    
+    if not is_creator and not is_admin:
+        from ninja.errors import HttpError
+        raise HttpError(403, 'Insufficient permissions to delete slot groups for this mission')
+    
+    slot_group = get_object_or_404(MissionSlotGroup, uid=slot_group_uid, mission=mission)
+    deleted_order = slot_group.order_number
+    
+    # Delete the slot group (slots will be cascade deleted)
+    slot_group.delete()
+    
+    # Shift down the order numbers of groups that came after this one
+    MissionSlotGroup.objects.filter(
+        mission=mission,
+        order_number__gt=deleted_order
+    ).update(order_number=models.F('order_number') - 1)
+    
+    return {'success': True}
+
+
+@router.post('/{slug}/slots', response={200: dict, 400: dict, 403: dict})
+def create_mission_slots(request, slug: str, data: List[MissionSlotCreateSchema]):
+    """Create one or more slots for a mission"""
+    mission = get_object_or_404(Mission, slug=slug)
+    
+    # Check permissions
+    user_uid = request.auth.get('user', {}).get('uid')
+    permissions = request.auth.get('permissions', [])
+    
+    is_creator = str(mission.creator.uid) == user_uid
+    is_admin = has_permission(permissions, 'admin.mission')
+    
+    if not is_creator and not is_admin:
+        from ninja.errors import HttpError
+        raise HttpError(403, 'Insufficient permissions to create slots for this mission')
+    
+    created_slots = []
+    
+    for slot_data in data:
+        # Validate DLCs
+        if slot_data.requiredDLCs:
+            validate_dlc_list(slot_data.requiredDLCs, 'requiredDLCs')
+        
+        # Get the slot group
+        slot_group = get_object_or_404(MissionSlotGroup, uid=slot_data.slotGroupUid, mission=mission)
+        
+        # Get existing slots in this group to determine order numbers
+        existing_slots = list(MissionSlot.objects.filter(slot_group=slot_group).order_by('order_number'))
+        
+        # Calculate the new order number based on insertAfter
+        insert_after = slot_data.insertAfter
+        new_order_number = insert_after + 1
+        
+        # Shift order numbers of slots that come after the insert point
+        for slot in existing_slots:
+            if slot.order_number >= new_order_number:
+                slot.order_number += 1
+                slot.save()
+        
+        # Get restricted community if specified
+        restricted_community = None
+        if slot_data.restrictedCommunityUid:
+            restricted_community = get_object_or_404(Community, uid=slot_data.restrictedCommunityUid)
+        
+        # Create the slot
+        slot = MissionSlot.objects.create(
+            slot_group=slot_group,
+            title=slot_data.title,
+            description=slot_data.description if slot_data.description else '',
+            detailed_description=slot_data.detailedDescription if slot_data.detailedDescription else '',
+            order_number=new_order_number,
+            required_dlcs=slot_data.requiredDLCs if slot_data.requiredDLCs else [],
+            restricted_community=restricted_community,
+            blocked=slot_data.blocked,
+            reserve=slot_data.reserve,
+            auto_assignable=slot_data.autoAssignable
+        )
+        
+        created_slots.append({
+            'uid': str(slot.uid),
+            'title': slot.title,
+            'description': slot.description,
+            'detailedDescription': slot.detailed_description,
+            'orderNumber': slot.order_number,
+            'requiredDLCs': slot.required_dlcs,
+            'blocked': slot.blocked,
+            'reserve': slot.reserve,
+            'autoAssignable': slot.auto_assignable,
+            'restrictedCommunity': {
+                'uid': str(restricted_community.uid),
+                'name': restricted_community.name,
+                'tag': restricted_community.tag,
+            } if restricted_community else None
+        })
+    
+    return {'slots': created_slots}
+
+
+@router.patch('/{slug}/slots/{slot_uid}', response={200: dict, 400: dict, 403: dict, 404: dict})
+def update_mission_slot(request, slug: str, slot_uid: UUID, data: MissionSlotUpdateSchema):
+    """Update a mission slot"""
+    mission = get_object_or_404(Mission, slug=slug)
+    
+    # Check permissions
+    user_uid = request.auth.get('user', {}).get('uid')
+    permissions = request.auth.get('permissions', [])
+    
+    is_creator = str(mission.creator.uid) == user_uid
+    is_admin = has_permission(permissions, 'admin.mission')
+    
+    if not is_creator and not is_admin:
+        from ninja.errors import HttpError
+        raise HttpError(403, 'Insufficient permissions to update slots for this mission')
+    
+    slot = get_object_or_404(MissionSlot, uid=slot_uid, slot_group__mission=mission)
+    
+    # Update fields if provided
+    if data.title is not None:
+        slot.title = data.title
+    
+    if data.description is not None:
+        slot.description = data.description
+    
+    if data.detailedDescription is not None:
+        slot.detailed_description = data.detailedDescription
+    
+    if data.requiredDLCs is not None:
+        validate_dlc_list(data.requiredDLCs, 'requiredDLCs')
+        slot.required_dlcs = data.requiredDLCs
+    
+    if data.restrictedCommunityUid is not None:
+        restricted_community = get_object_or_404(Community, uid=data.restrictedCommunityUid)
+        slot.restricted_community = restricted_community
+    
+    if data.blocked is not None:
+        slot.blocked = data.blocked
+    
+    if data.reserve is not None:
+        slot.reserve = data.reserve
+    
+    if data.autoAssignable is not None:
+        slot.auto_assignable = data.autoAssignable
+    
+    if data.orderNumber is not None and data.orderNumber != slot.order_number:
+        old_order = slot.order_number
+        new_order = data.orderNumber
+        
+        # Shift other slots' order numbers within the same group
+        if new_order > old_order:
+            MissionSlot.objects.filter(
+                slot_group=slot.slot_group,
+                order_number__gt=old_order,
+                order_number__lte=new_order
+            ).update(order_number=models.F('order_number') - 1)
+        else:
+            MissionSlot.objects.filter(
+                slot_group=slot.slot_group,
+                order_number__gte=new_order,
+                order_number__lt=old_order
+            ).update(order_number=models.F('order_number') + 1)
+        
+        slot.order_number = new_order
+    
+    slot.save()
+    
+    return {
+        'slot': {
+            'uid': str(slot.uid),
+            'title': slot.title,
+            'description': slot.description,
+            'detailedDescription': slot.detailed_description,
+            'orderNumber': slot.order_number,
+            'requiredDLCs': slot.required_dlcs,
+            'blocked': slot.blocked,
+            'reserve': slot.reserve,
+            'autoAssignable': slot.auto_assignable
+        }
+    }
+
+
+@router.delete('/{slug}/slots/{slot_uid}', response={200: dict, 403: dict, 404: dict})
+def delete_mission_slot(request, slug: str, slot_uid: UUID):
+    """Delete a mission slot"""
+    mission = get_object_or_404(Mission, slug=slug)
+    
+    # Check permissions
+    user_uid = request.auth.get('user', {}).get('uid')
+    permissions = request.auth.get('permissions', [])
+    
+    is_creator = str(mission.creator.uid) == user_uid
+    is_admin = has_permission(permissions, 'admin.mission')
+    
+    if not is_creator and not is_admin:
+        from ninja.errors import HttpError
+        raise HttpError(403, 'Insufficient permissions to delete slots for this mission')
+    
+    slot = get_object_or_404(MissionSlot, uid=slot_uid, slot_group__mission=mission)
+    deleted_order = slot.order_number
+    slot_group = slot.slot_group
+    
+    # Delete the slot
+    slot.delete()
+    
+    # Shift down the order numbers of slots that came after this one in the same group
+    MissionSlot.objects.filter(
+        slot_group=slot_group,
+        order_number__gt=deleted_order
+    ).update(order_number=models.F('order_number') - 1)
+    
+    return {'success': True}
 
 
 

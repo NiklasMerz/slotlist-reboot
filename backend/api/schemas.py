@@ -255,3 +255,40 @@ class MissionImportResponseSchema(Schema):
     mission_uid: Optional[UUID] = None
     mission_slug: Optional[str] = None
     mission_title: Optional[str] = None
+
+
+class MissionSlotGroupCreateSchema(Schema):
+    title: str
+    description: Optional[str] = None
+    insertAfter: int = 0
+
+
+class MissionSlotGroupUpdateSchema(Schema):
+    title: Optional[str] = None
+    description: Optional[str] = None
+    orderNumber: Optional[int] = None
+
+
+class MissionSlotCreateSchema(Schema):
+    title: str
+    description: Optional[str] = None
+    detailedDescription: Optional[str] = None
+    slotGroupUid: UUID
+    requiredDLCs: Optional[List[str]] = []
+    restrictedCommunityUid: Optional[UUID] = None
+    blocked: bool = False
+    reserve: bool = False
+    autoAssignable: bool = True
+    insertAfter: int = 0
+
+
+class MissionSlotUpdateSchema(Schema):
+    title: Optional[str] = None
+    description: Optional[str] = None
+    detailedDescription: Optional[str] = None
+    orderNumber: Optional[int] = None
+    requiredDLCs: Optional[List[str]] = None
+    restrictedCommunityUid: Optional[UUID] = None
+    blocked: Optional[bool] = None
+    reserve: Optional[bool] = None
+    autoAssignable: Optional[bool] = None

@@ -259,17 +259,41 @@ export default {
   }
   
   .slot-actions .btn-group {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    width: 100%;
+    display: inline-flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    gap: 3px;
+    width: auto !important;
   }
   
   .slot-actions .btn {
-    flex: 1 1 auto;
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto !important;
     min-width: 0;
-    font-size: 0.75rem;
-    padding: 0.25rem 0.5rem;
+    font-size: 0.65rem;
+    padding: 0.25rem 0.4rem;
+    line-height: 1;
+    white-space: nowrap;
+    margin: 0 !important;
+  }
+  
+  .slot-actions .btn i {
+    display: none;
+  }
+  
+  .slot-actions .btn-danger {
+    min-width: 28px;
+    width: 28px;
+    height: 28px;
+    padding: 0.3rem;
+    font-size: 0;
+  }
+  
+  .slot-actions .btn-danger i {
+    display: inline-block;
+    font-size: 0.85rem;
   }
 }
 </style>

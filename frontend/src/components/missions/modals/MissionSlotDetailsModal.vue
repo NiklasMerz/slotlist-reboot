@@ -217,3 +217,41 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+@media (max-width: 768px) {
+  .container-fluid .row {
+    margin-left: 0;
+    margin-right: 0;
+  }
+  
+  .container-fluid .col {
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+  }
+  
+  .container-fluid .row.font-weight-bold {
+    display: none;
+  }
+  
+  .modal-footer {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    justify-content: flex-start;
+  }
+  
+  .modal-footer .btn {
+    flex: 1 1 auto;
+    min-width: 0;
+    margin: 0 !important;
+    font-size: 0.75rem;
+    padding: 0.3rem 0.5rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+</style>

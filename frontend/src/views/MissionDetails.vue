@@ -314,6 +314,7 @@
       <div class="card">
         <div class="card-block text-nowrap">
           <h1>{{ $t('mission.slotlist') }}</h1>
+          <mission-slotlist></mission-slotlist>
           <div class="small">
             <b-form-group :label="$t('mission.slotlist.filter')" label-for="missionSlotlistFilter">
               <div role="group" id="missionSlotlistFilter">
@@ -383,7 +384,6 @@
               </div>
             </b-form-group>
           </div>
-          <mission-slotlist></mission-slotlist>
         </div>
       </div>
     </div>
@@ -805,6 +805,24 @@ export default {
 }
 
 @media (max-width: 768px) {
+  .card-block.text-nowrap {
+    white-space: normal !important;
+    overflow-x: hidden;
+  }
+  
+  .card-block.text-nowrap #missionSlotlistFilter,
+  .card-block.text-nowrap #missionSlotlistRequiredDLCsFilter {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+  
+  .card-block.text-nowrap .custom-checkbox {
+    flex: 0 0 auto;
+    margin-right: 8px;
+    font-size: 0.85rem;
+  }
+  
   .row.justify-content-center {
     display: flex;
     flex-wrap: wrap;

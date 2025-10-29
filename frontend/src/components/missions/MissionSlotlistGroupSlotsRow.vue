@@ -23,8 +23,8 @@
       <span v-if="!missionSlotDetails.blocked && !missionSlotDetails.assignee && !missionSlotDetails.externalAssignee && (!missionSlotDetails.registrationCount || missionSlotDetails.registrationCount <= 0)" class="text-muted font-italic">{{ `${this.$tc('mission.slot.assignee.registration', 0)}` }}</span>
       <span v-if="!missionSlotDetails.blocked && !missionSlotDetails.assignee && !missionSlotDetails.externalAssignee && missionSlotDetails.registrationCount && missionSlotDetails.registrationCount > 0" class="text-muted">{{ `${this.missionSlotDetails.registrationCount} ${this.$tc('mission.slot.assignee.registration', this.missionSlotDetails.registrationCount > 1 ? 2 : 1)}` }}</span>
     </td>
-    <td v-if="hasAnyMissionSlotDescription">{{ missionSlotDetails.description }}</td>
-    <td class="text-center">
+    <td v-if="hasAnyMissionSlotDescription" class="slot-description">{{ missionSlotDetails.description }}</td>
+    <td class="text-center slot-actions">
       <div class="btn-group btn-group-sm" role="group" aria-label="Mission slot actions">
         <b-btn variant="primary" size="sm" @click="prepareMissionSlotDetails" v-b-modal.missionSlotDetailsModal>
           <i class="fa fa-info" aria-hidden="true"></i> {{ $t('button.details') }}
@@ -204,3 +204,72 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+@media (max-width: 768px) {
+  tr {
+    display: flex;
+    flex-wrap: wrap;
+  }
+  
+  tr > td {
+    box-sizing: border-box;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  
+  tr > td:nth-child(1) {
+    order: 1;
+    flex: 0 0 auto;
+    width: auto;
+  }
+  
+  tr > td:nth-child(2) {
+    order: 2;
+    flex: 0 0 auto;
+    width: auto;
+    padding-right: 8px;
+  }
+  
+  tr > td:nth-child(3) {
+    order: 3;
+    flex: 1 1 50%;
+    min-width: 0;
+    word-wrap: break-word;
+  }
+  
+  tr > td:nth-child(4) {
+    order: 4;
+    flex: 1 1 50%;
+    min-width: 0;
+    word-wrap: break-word;
+  }
+  
+  .slot-description {
+    order: 6 !important;
+    width: 100%;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+  }
+  
+  .slot-actions {
+    order: 5 !important;
+    width: 100%;
+    text-align: left !important;
+  }
+  
+  .slot-actions .btn-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    width: 100%;
+  }
+  
+  .slot-actions .btn {
+    flex: 1 1 auto;
+    min-width: 0;
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+  }
+}
+</style>

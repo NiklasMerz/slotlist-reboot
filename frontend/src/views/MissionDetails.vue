@@ -798,3 +798,44 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+.row.justify-content-center .btn {
+  margin: 0.5rem;
+}
+
+@media (max-width: 768px) {
+  .row.justify-content-center {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+    margin-bottom: 0.5rem;
+  }
+  
+  .row.justify-content-center .btn {
+    flex: 1 1 auto;
+    min-width: 0;
+    margin: 0;
+    font-size: 0.875rem;
+    padding: 0.375rem 0.75rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  
+  .row.justify-content-center .click-confirm {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+  
+  .row.justify-content-center .click-confirm .btn {
+    width: 100%;
+  }
+  
+  .row.justify-content-center span {
+    display: none;
+  }
+}
+</style>
+

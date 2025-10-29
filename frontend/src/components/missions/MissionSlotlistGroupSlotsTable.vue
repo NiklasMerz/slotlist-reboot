@@ -7,8 +7,8 @@
           <th style="width: 6%">#</th>
           <th :style="missionSlotRoleStyle">{{ $t('mission.slot.role') }}</th>
           <th :style="missionSlotPlayerStyle">{{ $t('mission.slot.player') }}</th>
-          <th style="width: 28%" v-if="hasAnyMissionSlotDescription">{{ $t('mission.slot.description') }}</th>
-          <th style="width: 10%" class="text-center">{{ $t('misc.actions') }}</th>
+          <th style="width: 28%" v-if="hasAnyMissionSlotDescription" class="slot-description-header">{{ $t('mission.slot.description') }}</th>
+          <th style="width: 10%" class="text-center slot-actions-header">{{ $t('misc.actions') }}</th>
         </tr>
       </thead>
       <tbody>
@@ -20,8 +20,8 @@
           <th style="width: 6%">#</th>
           <th :style="missionSlotRoleStyle">{{ $t('mission.slot.role') }}</th>
           <th :style="missionSlotPlayerStyle">{{ $t('mission.slot.player') }}</th>
-          <th style="width: 28%" v-if="hasAnyMissionSlotDescription">{{ $t('mission.slot.description') }}</th>
-          <th style="width: 10%" class="text-center">{{ $t('misc.actions') }}</th>
+          <th style="width: 28%" v-if="hasAnyMissionSlotDescription" class="slot-description-header">{{ $t('mission.slot.description') }}</th>
+          <th style="width: 10%" class="text-center slot-actions-header">{{ $t('misc.actions') }}</th>
         </tr>
       </tfoot>
     </table>
@@ -66,3 +66,53 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+@media (max-width: 768px) {
+  thead tr, tfoot tr {
+    display: flex;
+    flex-wrap: wrap;
+  }
+  
+  thead th, tfoot th {
+    box-sizing: border-box;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  
+  thead th:nth-child(1), tfoot th:nth-child(1) {
+    order: 1;
+    flex: 0 0 auto;
+    width: auto;
+  }
+  
+  thead th:nth-child(2), tfoot th:nth-child(2) {
+    order: 2;
+    flex: 0 0 auto;
+    width: auto;
+  }
+  
+  thead th:nth-child(3), tfoot th:nth-child(3) {
+    order: 3;
+    flex: 1 1 50%;
+    min-width: 0;
+  }
+  
+  thead th:nth-child(4), tfoot th:nth-child(4) {
+    order: 4;
+    flex: 1 1 50%;
+    min-width: 0;
+  }
+  
+  .slot-description-header {
+    order: 6 !important;
+    width: 100%;
+  }
+  
+  .slot-actions-header {
+    order: 5 !important;
+    width: 100%;
+    text-align: left !important;
+  }
+}
+</style>

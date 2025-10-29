@@ -79,6 +79,8 @@
   "calendar.title": "Upcoming missions",
   "calendar.today": "Today",
   "calendar.tomorrow": "Tomorrow",
+  "calendar.communityFilter": "Filter by community",
+  "calendar.allCommunities": "All communities",
   "community.application.confirm.accept": "Accept application?",
   "community.application.confirm.deny": "Deny application?",
   "community.application.nickname": "Nickname",

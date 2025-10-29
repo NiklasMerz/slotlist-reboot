@@ -23,6 +23,7 @@ const intervals = {
 const state = {
   checkingMissionSlugAvailability: false,
   missionAccesses: null,
+  missionCalendarCommunityFilter: null,
   missionCalendarCurrentMonth: null,
   missionDetails: null,
   missionListFilter: {},
@@ -127,14 +128,43 @@ const getters = {
 
     return filteredMissions
   },
+  missionCalendarCommunityFilter() {
+    return state.missionCalendarCommunityFilter
+  },
   missionsForCalendar() {
-    return state.missionsForCalendar
+    if (_.isNil(state.missionCalendarCommunityFilter)) {
+      return state.missionsForCalendar
+    }
+
+    if (_.isNil(state.missionsForCalendar)) {
+      return null
+    }
+
+    return _.filter(state.missionsForCalendar, mission => {
+      if (_.isNil(mission.community)) {
+        return false
+      }
+      return mission.community.slug === state.missionCalendarCommunityFilter
+    })
   },
   missionsForCalendarRefreshSetInterval() {
     return state.missionsForCalendarRefreshSetInterval
   },
   missionsForAgenda() {
-    return state.missionsForAgenda
+    if (_.isNil(state.missionCalendarCommunityFilter)) {
+      return state.missionsForAgenda
+    }
+
+    if (_.isNil(state.missionsForAgenda)) {
+      return null
+    }
+
+    return _.filter(state.missionsForAgenda, mission => {
+      if (_.isNil(mission.community)) {
+        return false
+      }
+      return mission.community.slug === state.missionCalendarCommunityFilter
+    })
   },
   missionsForAgendaRefreshSetInterval() {
     return state.missionsForAgendaRefreshSetInterval
@@ -1746,6 +1776,12 @@ const actions = {
       missionListRequiredDLCsFilter: payload
     })
   },
+  filterMissionCalendarByCommunity({ commit }, payload) {
+    commit({
+      type: 'setMissionCalendarCommunityFilter',
+      communitySlug: payload
+    })
+  },
   filterMissionSlotlist({ commit }, payload) {
     commit({
       type: 'setMissionSlotlistFilter',
@@ -2982,6 +3018,9 @@ const mutations = {
   setMissionPermissions(state, payload) {
     state.missionPermissions = payload.permissions
     state.totalMissionPermissions = payload.total
+  },
+  setMissionCalendarCommunityFilter(state, payload) {
+    state.missionCalendarCommunityFilter = payload.communitySlug
   },
   setMissions(state, payload) {
     state.missions = payload.missions

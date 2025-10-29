@@ -79,6 +79,8 @@
   "calendar.title": "Bevoastehade Missionen",
   "calendar.today": "Heid",
   "calendar.tomorrow": "Moing",
+  "calendar.communityFilter": "Noch Community filtean",
+  "calendar.allCommunities": "Olle Communities",
   "community.application.confirm.accept": "Bewerbung aunehma?",
   "community.application.confirm.deny": "Bewerbung olehna?",
   "community.application.nickname": "Nicknaume",

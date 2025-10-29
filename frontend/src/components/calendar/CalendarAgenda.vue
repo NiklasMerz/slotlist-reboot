@@ -17,6 +17,7 @@
               <div class="agenda-mission-details">
                 <div class="agenda-mission-title">{{ mission.title }}</div>
                 <div class="agenda-mission-community" v-if="mission.community">
+                  <span v-if="mission.community.tag" class="community-tag">[{{ mission.community.tag }}]</span>
                   {{ mission.community.name }}
                 </div>
               </div>
@@ -156,5 +157,11 @@ export default {
 .agenda-mission-community {
   font-size: 0.9em;
   color: #666;
+}
+
+.community-tag {
+  font-weight: 600;
+  margin-right: 6px;
+  color: #367016;
 }
 </style>

@@ -6,6 +6,7 @@
           <h3>{{ $t('calendar.title') }}</h3>
         </div>
         <div class="card-block">
+          <calendar-community-filter></calendar-community-filter>
           <div class="calendar-view-desktop">
             <calendar-header></calendar-header>
             <calendar-body></calendar-body>
@@ -25,12 +26,14 @@ import moment from 'moment-timezone'
 import CalendarBody from './calendar/CalendarBody.vue'
 import CalendarHeader from './calendar/CalendarHeader.vue'
 import CalendarAgenda from './calendar/CalendarAgenda.vue'
+import CalendarCommunityFilter from './calendar/CalendarCommunityFilter.vue'
 
 export default {
   components: {
     CalendarBody,
     CalendarHeader,
-    CalendarAgenda
+    CalendarAgenda,
+    CalendarCommunityFilter
   },
   beforeCreate: function() {
     if (_.isNil(this.$store.getters.missionsForCalendar)) {

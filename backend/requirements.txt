@@ -9,7 +9,5 @@ python-dateutil>=2.8.0
 django-cors-headers>=4.3.0
 requests>=2.31.0
 Pillow>=10.0.0
-google-cloud-storage>=2.10.0
-google-cloud-logging>=3.5.0
 python3-openid>=3.2.0
 

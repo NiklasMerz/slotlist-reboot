@@ -193,10 +193,6 @@ except (ValueError, TypeError):
 # Steam API
 STEAM_API_SECRET = os.getenv('CONFIG_STEAM_API_SECRET', '')
 
-# Google Cloud Storage
-GCS_BUCKET_NAME = os.getenv('CONFIG_STORAGE_BUCKETNAME', '')
-GCS_PROJECT_ID = os.getenv('CONFIG_STORAGE_PROJECTID', '')
-
 # Default Admin User
 DEFAULT_ADMIN_UID = os.getenv('DEFAULT_ADMIN_UID', None)
 DEFAULT_ADMIN_STEAMID = os.getenv('DEFAULT_ADMIN_STEAMID', '')

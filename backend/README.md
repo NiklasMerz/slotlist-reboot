@@ -61,10 +61,6 @@ CONFIG_JWT_EXPIRESIN=86400
 # Steam API
 CONFIG_STEAM_API_SECRET=your-steam-api-key
 
-# Google Cloud Storage
-CONFIG_STORAGE_BUCKETNAME=your-bucket-name
-CONFIG_STORAGE_PROJECTID=your-project-id
-
 # Default Admin User
 DEFAULT_ADMIN_STEAMID=your-steam-id
 DEFAULT_ADMIN_NICKNAME=your-nickname

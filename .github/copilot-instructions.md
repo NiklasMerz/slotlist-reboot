@@ -188,3 +188,142 @@ This project maintains compatibility with the original slotlist.online implement
 - API responses must match original format
 - Frontend must work with existing user expectations
 - Both TypeScript and Django backends can operate on same database
+
+## Build and Deployment Commands
+
+### Backend Build
+```bash
+# Install dependencies
+cd backend
+pip install -r requirements.txt
+
+# Run Django checks
+python manage.py check
+
+# Collect static files (if needed)
+python manage.py collectstatic --noinput
+```
+
+### Frontend Build
+```bash
+# Install dependencies
+cd frontend
+yarn install
+
+# Development build with hot reload
+yarn dev:local        # Connects to localhost:8000 backend
+yarn dev              # Connects to configured backend URL
+
+# Production build
+yarn build            # Creates optimized build in build/ directory
+```
+
+### Docker Deployment
+```bash
+# Start all services
+docker-compose up --build
+
+# Backend only
+docker-compose up db backend
+
+# Frontend development
+docker-compose up db backend frontend-dev
+
+# Frontend production
+docker-compose --profile production up frontend
+```
+
+## Common Development Commands
+
+### Backend Commands
+
+**Linting and Code Quality**:
+```bash
+cd backend
+# Django has no specific linter configured - follow PEP 8 and Django conventions
+python -m py_compile <file>  # Check syntax
+```
+
+**Testing**:
+```bash
+cd backend
+# Run full compatibility test suite
+./run_compatibility_tests.sh
+
+# Run specific test module
+python manage.py test api.tests.test_auth
+
+# Run with coverage
+coverage run --source='.' manage.py test
+coverage report
+```
+
+**Database**:
+```bash
+cd backend
+# Create Django admin superuser
+python manage.py createsuperuser
+
+# Access Django shell
+python manage.py shell
+
+# Access database shell
+python manage.py dbshell
+```
+
+### Frontend Commands
+
+**Linting**:
+```bash
+cd frontend
+# Run XO linter (ESLint wrapper)
+yarn lint
+
+# Auto-fix linting issues (when possible)
+yarn lint --fix
+```
+
+**Development**:
+```bash
+cd frontend
+# Start development server with hot reload
+yarn dev:local       # For local backend at localhost:8000
+
+# Build for production
+yarn build
+
+# Test production build locally
+# (serve the build/ directory with any static server)
+```
+
+## File Organization
+
+### Backend Structure
+```
+backend/
+├── api/                    # API implementation
+│   ├── routers/           # API endpoint routers
+│   ├── schemas.py         # Pydantic request/response schemas
+│   ├── tests/             # API tests
+│   └── api.py             # Main API configuration
+├── slotlist_backend/      # Django project settings
+│   ├── models/            # Django models (unmanaged)
+│   └── settings.py        # Django configuration
+├── manage.py              # Django management script
+└── requirements.txt       # Python dependencies
+```
+
+### Frontend Structure
+```
+frontend/
+├── src/
+│   ├── components/        # Shared Vue components
+│   ├── missions/          # Mission feature components
+│   ├── communities/       # Community feature components
+│   ├── users/             # User feature components
+│   ├── store/             # Vuex store modules
+│   ├── router/            # Vue Router configuration
+│   └── api/               # API client functions
+├── build/                 # Webpack configuration
+└── package.json           # Node dependencies and scripts
+```

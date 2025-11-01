@@ -76,6 +76,12 @@
           <b-form-checkbox v-model="missionListRequiredDLCsFilter" name="vn" value="vn">
             <img src="https://slotlist-info.storage.googleapis.com/images/static/dlc-icons/vn.png" width="16px" alt="S.O.G. Prairie Fire" /> {{ $t('mission.requiredDLCs.vn') }}
           </b-form-checkbox>
+          <b-form-checkbox v-model="missionListRequiredDLCsFilter" name="spe" value="spe">
+            <img src="https://slotlist-info.storage.googleapis.com/images/static/dlc-icons/spe.png" width="16px" alt="Spearhead 1944" /> {{ $t('mission.requiredDLCs.spe') }}
+          </b-form-checkbox>
+          <b-form-checkbox v-model="missionListRequiredDLCsFilter" name="ws" value="ws">
+            <img src="https://slotlist-info.storage.googleapis.com/images/static/dlc-icons/ws.png" width="16px" alt="Western Sahara" /> {{ $t('mission.requiredDLCs.ws') }}
+          </b-form-checkbox>
         </div>
       </b-form-group>
     </div>

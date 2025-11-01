@@ -50,9 +50,12 @@
       <img src="https://slotlist-info.storage.googleapis.com/images/static/dlc-icons/laws-of-war.png" width="12px" alt="Laws of War" /> {{ $t('mission.requiredDLCs.laws-of-war') }} | 
       <img src="https://slotlist-info.storage.googleapis.com/images/static/dlc-icons/marksmen.png" width="12px" alt="Marksmen" /> {{ $t('mission.requiredDLCs.marksmen') }} |
       <img src="https://slotlist-info.storage.googleapis.com/images/static/dlc-icons/rf.png" width="12px" alt="Reaction Forces" /> {{ $t('mission.requiredDLCs.rf') }} | 
+      <br/>
+      <img src="https://slotlist-info.storage.googleapis.com/images/static/dlc-icons/spe.png" width="12px" alt="Spearhead 1944" /> {{ $t('mission.requiredDLCs.spe') }} | 
       <img src="https://slotlist-info.storage.googleapis.com/images/static/dlc-icons/tac-ops.png" width="12px" alt="Tac-Ops" /> {{ $t('mission.requiredDLCs.tac-ops') }} | 
       <img src="https://slotlist-info.storage.googleapis.com/images/static/dlc-icons/tanks.png" width="12px" alt="Tanks" /> {{ $t('mission.requiredDLCs.tanks') }} | 
-      <img src="https://slotlist-info.storage.googleapis.com/images/static/dlc-icons/vn.png" width="12px" alt="S.O.G. Prairie Fire" /> {{ $t('mission.requiredDLCs.vn') }}
+      <img src="https://slotlist-info.storage.googleapis.com/images/static/dlc-icons/vn.png" width="12px" alt="S.O.G. Prairie Fire" /> {{ $t('mission.requiredDLCs.vn') }} | 
+      <img src="https://slotlist-info.storage.googleapis.com/images/static/dlc-icons/ws.png" width="12px" alt="Western Sahara" /> {{ $t('mission.requiredDLCs.ws') }}
     </div>
   </div>
 </template>

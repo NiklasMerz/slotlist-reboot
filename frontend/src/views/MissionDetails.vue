@@ -652,7 +652,14 @@ export default {
       }
 
       return _.map(this.missionDetails.requiredDLCs, (requiredDLC) => {
-        return `https://slotlist-info.storage.googleapis.com/images/static/dlc-icons/${requiredDLC.toLowerCase()}.png`
+        // Convert backend DLC identifiers to image file names
+        let dlcImageName = requiredDLC.toLowerCase()
+        if (dlcImageName === 'lawsofwar') {
+          dlcImageName = 'laws-of-war'
+        } else if (dlcImageName === 'tacops') {
+          dlcImageName = 'tac-ops'
+        }
+        return `https://slotlist-info.storage.googleapis.com/images/static/dlc-icons/${dlcImageName}.png`
       })
     },
     missionSlotGroups() {

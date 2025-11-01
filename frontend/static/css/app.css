@@ -65,5 +65,53 @@ body {
   .table td .btn-group .btn:last-child {
     margin-bottom: 0;
   }
+
+  /* Mission list table responsive design */
+  .table thead {
+    display: none;
+  }
+
+  .table tfoot {
+    display: none;
+  }
+
+  .table tbody tr {
+    display: block;
+    margin-bottom: 1.5rem;
+    border: 1px solid #dee2e6;
+    border-radius: 0.25rem;
+    background-color: #fff;
+  }
+
+  .table tbody td {
+    display: block;
+    text-align: left !important;
+    padding: 0.5rem 0.75rem;
+    border: none;
+    border-bottom: 1px solid #f0f0f0;
+  }
+
+  .table tbody td:last-child {
+    border-bottom: none;
+  }
+
+  .table tbody td::before {
+    content: attr(data-label);
+    font-weight: bold;
+    display: block;
+    margin-bottom: 0.25rem;
+    color: #6c757d;
+    font-size: 0.875rem;
+  }
+
+  .table tbody td .btn {
+    width: 100%;
+  }
+
+  /* Mobile search bar */
+  .d-flex.flex-wrap .w-100 {
+    margin-left: 0 !important;
+    max-width: 100% !important;
+  }
 }
 

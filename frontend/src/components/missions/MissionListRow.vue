@@ -1,7 +1,7 @@
 <template>
   <tr>
-    <td>{{ formatDateTime(mission.startTime) }}</td>
-    <td :class="{'text-primary': isMissionEditor}">
+    <td :data-label="$t('mission.list.startTime')">{{ formatDateTime(mission.startTime) }}</td>
+    <td :data-label="$t('mission.list.title')" :class="{'text-primary': isMissionEditor}">
       <b-popover v-if="isMissionEditor" :content="$t('mission.list.isMissionEditor')" :triggers="['hover']">
         <span>
           {{ mission.title }}
@@ -10,15 +10,15 @@
       </b-popover>
       <span v-else>{{ mission.title }} <img v-for="requiredDLC in missionRequiredDLCs" :key="requiredDLC" :src="requiredDLC" width="16px" /></span>
       </td>
-    <td>
+    <td :data-label="$t('mission.list.creator')">
       <router-link :to="{name: 'userDetails', params: {userUid: mission.creator.uid}}">{{ formatUserWithTag(mission.creator) }}</router-link>
     </td>
-    <td class="text-center">
+    <td :data-label="$t('mission.list.slot.counts')" class="text-center">
       <b-popover :content="$t('mission.list.slot.counts.popover', mission.slotCounts)" :triggers="['hover']">
         {{ mission.slotCounts.assigned + mission.slotCounts.external + mission.slotCounts.unassigned }}/{{ mission.slotCounts.total }}
       </b-popover>
     </td>
-    <td class="text-center">
+    <td :data-label="$t('mission.list.slot.counts.available')" class="text-center">
       <b-popover v-if="mission.isAssignedToAnySlot" :content="$t('mission.list.slot.status.assigned')" :triggers="['hover']">
         <i class="fa fa-check fa-lg text-success" aria-hidden="true"></i>
       </b-popover>
@@ -29,7 +29,7 @@
         {{ mission.slotCounts.open }}
       </b-popover>
     </td>
-    <td class="text-center">
+    <td :data-label="$t('misc.actions')" class="text-center">
       <b-btn variant="primary" size="sm" :to="{name: 'missionDetails', params: {missionSlug: mission.slug}}">
         <i class="fa fa-info" aria-hidden="true"></i> {{ $t('button.details') }}
       </b-btn>

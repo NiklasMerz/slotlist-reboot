@@ -1,8 +1,8 @@
 <template>
   <div>
-    <div class="d-flex justify-content-between align-items-center mb-4">
-      <h2 class="m-0">{{ $t('nav.missions') }}</h2>
-      <div style="max-width: 300px; flex: 1; margin-left: 2rem;">
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap">
+      <h2 class="m-0 mb-2 mb-md-0">{{ $t('nav.missions') }}</h2>
+      <div style="max-width: 300px; flex: 1; margin-left: 0; margin-top: 0.5rem;" class="w-100 w-md-auto">
         <input 
           type="search" 
           class="form-control" 

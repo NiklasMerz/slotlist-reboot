@@ -608,13 +608,7 @@ export default {
           return
         }
 
-        if (dlc === 'lawsofwar') {
-          updatedMissionRequiredDLCs.push('laws-of-war')
-        } else if (dlc === 'tacops') {
-          updatedMissionRequiredDLCs.push('tac-ops')
-        } else {
-          updatedMissionRequiredDLCs.push(dlc)
-        }
+        updatedMissionRequiredDLCs.push(dlc)
       })
 
       const updatedMissionDetails = {}
@@ -729,11 +723,11 @@ export default {
         helicopters: this.hasMissionRequiredDLC('helicopters'),
         jets: this.hasMissionRequiredDLC('jets'),
         karts: this.hasMissionRequiredDLC('karts'),
-        lawsofwar: this.hasMissionRequiredDLC('laws-of-war'),
+        lawsofwar: this.hasMissionRequiredDLC('lawsofwar'),
         marksmen: this.hasMissionRequiredDLC('marksmen'),
         rf: this.hasMissionRequiredDLC('rf'),
         spe: this.hasMissionRequiredDLC('spe'),
-        tacops: this.hasMissionRequiredDLC('tac-ops'),
+        tacops: this.hasMissionRequiredDLC('tacops'),
         tanks: this.hasMissionRequiredDLC('tanks'),
         vn: this.hasMissionRequiredDLC('vn'),
         ws: this.hasMissionRequiredDLC('ws')

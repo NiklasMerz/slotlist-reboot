@@ -701,13 +701,7 @@ export default {
           return
         }
 
-        if (dlc === 'lawsofwar') {
-          missionRequiredDLCs.push('laws-of-war')
-        } else if (dlc === 'tacops') {
-          missionRequiredDLCs.push('tac-ops')
-        } else {
-          missionRequiredDLCs.push(dlc)
-        }
+        missionRequiredDLCs.push(dlc)
       })
 
       const missionDetails = {

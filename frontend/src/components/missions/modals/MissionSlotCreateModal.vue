@@ -343,13 +343,7 @@ export default {
           return
         }
 
-        if (dlc === 'lawsofwar') {
-          missionSlotRequiredDLCs.push('laws-of-war')
-        } else if (dlc === 'tacops') {
-          missionSlotRequiredDLCs.push('tac-ops')
-        } else {
-          missionSlotRequiredDLCs.push(dlc)
-        }
+        missionSlotRequiredDLCs.push(dlc)
       })
 
       const payload = _.assign({ slotGroupUid: this.missionSlotGroupDetails.uid, requiredDLCs: missionSlotRequiredDLCs }, _.omit(this.missionSlotCreateData, 'restricted'))

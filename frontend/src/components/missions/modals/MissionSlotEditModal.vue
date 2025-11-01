@@ -313,11 +313,11 @@ export default {
         helicopters: this.hasSlotRequiredDLC('helicopters'),
         jets: this.hasSlotRequiredDLC('jets'),
         karts: this.hasSlotRequiredDLC('karts'),
-        lawsofwar: this.hasSlotRequiredDLC('laws-of-war'),
+        lawsofwar: this.hasSlotRequiredDLC('lawsofwar'),
         marksmen: this.hasSlotRequiredDLC('marksmen'),
         rf: this.hasSlotRequiredDLC('rf'),
         spe: this.hasSlotRequiredDLC('spe'),
-        tacops: this.hasSlotRequiredDLC('tac-ops'),
+        tacops: this.hasSlotRequiredDLC('tacops'),
         tanks: this.hasSlotRequiredDLC('tanks'),
         vn: this.hasSlotRequiredDLC('vn'),
         ws: this.hasSlotRequiredDLC('ws')
@@ -348,13 +348,7 @@ export default {
           return
         }
 
-        if (dlc === 'lawsofwar') {
-          updatedMissionSlotRequiredDLCs.push('laws-of-war')
-        } else if (dlc === 'tacops') {
-          updatedMissionSlotRequiredDLCs.push('tac-ops')
-        } else {
-          updatedMissionSlotRequiredDLCs.push(dlc)
-        }
+        updatedMissionSlotRequiredDLCs.push(dlc)
       })
 
       const updatedMissionSlotDetails = {}

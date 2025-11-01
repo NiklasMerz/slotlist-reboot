@@ -42,6 +42,12 @@ This is a dual-stack application with separate backend and frontend:
 
 ## Important Constraints
 
+### Development Environment
+- **NEVER** start services (docker-compose, runserver, yarn dev) - assume they are already running locally
+- Services run via root `docker-compose.yml` during local development
+- Backend runs on port 8022, frontend on port 3000
+- Use existing running services for testing and validation
+
 ### Database Management
 - **NEVER** run Django migrations on production tables
 - **NEVER** modify model Meta classes to enable management

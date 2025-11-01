@@ -123,7 +123,7 @@ export default {
       }
 
       return _.map(this.missionSlotDetails.requiredDLCs, (requiredDLC) => {
-        return `/static/img/dlc-icons/${requiredDLC.toLowerCase()}.png`
+        return `/img/dlc-icons/${requiredDLC.toLowerCase()}.png`
       })
     },
     missionSlotSelected() {

@@ -62,7 +62,7 @@ export default {
       }
 
       return _.map(this.mission.requiredDLCs, (requiredDLC) => {
-        return `/static/img/dlc-icons/${requiredDLC.toLowerCase()}.png`
+        return `/img/dlc-icons/${requiredDLC.toLowerCase()}.png`
       })
     }
   }

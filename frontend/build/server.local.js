@@ -34,6 +34,9 @@ app.use(require('webpack-hot-middleware')(compiler, {
   log: () => {}
 }))
 
+// Serve static files from the static directory
+app.use(express.static(path.join(__dirname, '../static')))
+
 const mfs = devMiddleWare.fileSystem
 const file = path.join(webpackConfig.output.path, 'index.html')
 

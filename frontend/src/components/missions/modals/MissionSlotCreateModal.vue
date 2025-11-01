@@ -64,65 +64,65 @@
           <span class="text-success" style="font-size: 1rem; font-weight: 400; line-height: 1.5">{{ $t('mission.requiredDLCs') }}</span>
           <div class="row">
             <div class="col">
-              <b-form-checkbox v-model="missionSlotCreateRequiredDLCs.aow"><img src="/static/img/dlc-icons/aow.png" width="16px" alt="Art of War" /> {{ $t('mission.requiredDLCs.aow') }}</b-form-checkbox>
+              <b-form-checkbox v-model="missionSlotCreateRequiredDLCs.aow"><img src="/img/dlc-icons/aow.png" width="16px" alt="Art of War" /> {{ $t('mission.requiredDLCs.aow') }}</b-form-checkbox>
             </div>
             <div class="col">
-              <b-form-checkbox v-model="missionSlotCreateRequiredDLCs.apex"><img src="/static/img/dlc-icons/apex.png" width="16px" alt="Apex" /> {{ $t('mission.requiredDLCs.apex') }}</b-form-checkbox>
+              <b-form-checkbox v-model="missionSlotCreateRequiredDLCs.apex"><img src="/img/dlc-icons/apex.png" width="16px" alt="Apex" /> {{ $t('mission.requiredDLCs.apex') }}</b-form-checkbox>
             </div>
             <div class="col">
-              <b-form-checkbox v-model="missionSlotCreateRequiredDLCs.contact"><img src="/static/img/dlc-icons/contact.png" width="16px" alt="Contact" /> {{ $t('mission.requiredDLCs.contact') }}</b-form-checkbox>
-            </div>
-          </div>
-          <div class="row">
-            <div class="col">
-              <b-form-checkbox v-model="missionSlotCreateRequiredDLCs.csla"><img src="/static/img/dlc-icons/csla.png" width="16px" alt="CSLA Iron Curtain" /> {{ $t('mission.requiredDLCs.csla') }}</b-form-checkbox>
-            </div>
-            <div class="col">
-              <b-form-checkbox v-model="missionSlotCreateRequiredDLCs.gm"><img src="/static/img/dlc-icons/gm.png" width="16px" alt="Global Mobilization" /> {{ $t('mission.requiredDLCs.gm') }}</b-form-checkbox>
-            </div>
-            <div class="col">
-              <b-form-checkbox v-model="missionSlotCreateRequiredDLCs.helicopters"><img src="/static/img/dlc-icons/helicopters.png" width="16px" alt="Helicopters" /> {{ $t('mission.requiredDLCs.helicopters') }}</b-form-checkbox>
+              <b-form-checkbox v-model="missionSlotCreateRequiredDLCs.contact"><img src="/img/dlc-icons/contact.png" width="16px" alt="Contact" /> {{ $t('mission.requiredDLCs.contact') }}</b-form-checkbox>
             </div>
           </div>
           <div class="row">
             <div class="col">
-              <b-form-checkbox v-model="missionSlotCreateRequiredDLCs.jets"><img src="/static/img/dlc-icons/jets.png" width="16px" alt="Jets" /> {{ $t('mission.requiredDLCs.jets') }}</b-form-checkbox>
+              <b-form-checkbox v-model="missionSlotCreateRequiredDLCs.csla"><img src="/img/dlc-icons/csla.png" width="16px" alt="CSLA Iron Curtain" /> {{ $t('mission.requiredDLCs.csla') }}</b-form-checkbox>
             </div>
             <div class="col">
-              <b-form-checkbox v-model="missionSlotCreateRequiredDLCs.karts"><img src="/static/img/dlc-icons/karts.png" width="16px" alt="Karts" /> {{ $t('mission.requiredDLCs.karts') }}</b-form-checkbox>
+              <b-form-checkbox v-model="missionSlotCreateRequiredDLCs.gm"><img src="/img/dlc-icons/gm.png" width="16px" alt="Global Mobilization" /> {{ $t('mission.requiredDLCs.gm') }}</b-form-checkbox>
             </div>
             <div class="col">
-              <b-form-checkbox v-model="missionSlotCreateRequiredDLCs.lawsofwar"><img src="/static/img/dlc-icons/lawsofwar.png" width="16px" alt="Laws of War" /> {{ $t('mission.requiredDLCs.laws-of-war') }}</b-form-checkbox>
-            </div>
-          </div>
-          <div class="row">
-            <div class="col">
-              <b-form-checkbox v-model="missionSlotCreateRequiredDLCs.marksmen"><img src="/static/img/dlc-icons/marksmen.png" width="16px" alt="Marksmen" /> {{ $t('mission.requiredDLCs.marksmen') }}</b-form-checkbox>
-            </div>
-            <div class="col">
-              <b-form-checkbox v-model="missionSlotCreateRequiredDLCs.tacops"><img src="/static/img/dlc-icons/tacops.png" width="16px" alt="Tac-Ops" /> {{ $t('mission.requiredDLCs.tac-ops') }}</b-form-checkbox>
-            </div>
-            <div class="col">
-              <b-form-checkbox v-model="missionSlotCreateRequiredDLCs.tanks"><img src="/static/img/dlc-icons/tanks.png" width="16px" alt="Tanks" /> {{ $t('mission.requiredDLCs.tanks') }}</b-form-checkbox>
+              <b-form-checkbox v-model="missionSlotCreateRequiredDLCs.helicopters"><img src="/img/dlc-icons/helicopters.png" width="16px" alt="Helicopters" /> {{ $t('mission.requiredDLCs.helicopters') }}</b-form-checkbox>
             </div>
           </div>
           <div class="row">
             <div class="col">
-              <b-form-checkbox v-model="missionSlotCreateRequiredDLCs.vn"><img src="/static/img/dlc-icons/vn.png" width="16px" alt="S.O.G. Prairie Fire" /> {{ $t('mission.requiredDLCs.vn') }}</b-form-checkbox>
+              <b-form-checkbox v-model="missionSlotCreateRequiredDLCs.jets"><img src="/img/dlc-icons/jets.png" width="16px" alt="Jets" /> {{ $t('mission.requiredDLCs.jets') }}</b-form-checkbox>
             </div>
             <div class="col">
-              <b-form-checkbox v-model="missionSlotCreateRequiredDLCs.spe"><img src="/static/img/dlc-icons/spe.png" width="16px" alt="Spearhead 1944" /> {{ $t('mission.requiredDLCs.spe') }}</b-form-checkbox>
+              <b-form-checkbox v-model="missionSlotCreateRequiredDLCs.karts"><img src="/img/dlc-icons/karts.png" width="16px" alt="Karts" /> {{ $t('mission.requiredDLCs.karts') }}</b-form-checkbox>
             </div>
             <div class="col">
-              <b-form-checkbox v-model="missionSlotCreateRequiredDLCs.ws"><img src="/static/img/dlc-icons/ws.png" width="16px" alt="Western Sahara" /> {{ $t('mission.requiredDLCs.ws') }}</b-form-checkbox>
+              <b-form-checkbox v-model="missionSlotCreateRequiredDLCs.lawsofwar"><img src="/img/dlc-icons/lawsofwar.png" width="16px" alt="Laws of War" /> {{ $t('mission.requiredDLCs.laws-of-war') }}</b-form-checkbox>
             </div>
           </div>
           <div class="row">
             <div class="col">
-              <b-form-checkbox v-model="missionSlotCreateRequiredDLCs.ef"><img src="/static/img/dlc-icons/ef.png" width="16px" alt="Expeditionary Forces" /> {{ $t('mission.requiredDLCs.ef') }}</b-form-checkbox>
+              <b-form-checkbox v-model="missionSlotCreateRequiredDLCs.marksmen"><img src="/img/dlc-icons/marksmen.png" width="16px" alt="Marksmen" /> {{ $t('mission.requiredDLCs.marksmen') }}</b-form-checkbox>
             </div>
             <div class="col">
-              <b-form-checkbox v-model="missionSlotCreateRequiredDLCs.rf"><img src="/static/img/dlc-icons/rf.png" width="16px" alt="Reaction Forces" /> {{ $t('mission.requiredDLCs.rf') }}</b-form-checkbox>
+              <b-form-checkbox v-model="missionSlotCreateRequiredDLCs.tacops"><img src="/img/dlc-icons/tacops.png" width="16px" alt="Tac-Ops" /> {{ $t('mission.requiredDLCs.tac-ops') }}</b-form-checkbox>
+            </div>
+            <div class="col">
+              <b-form-checkbox v-model="missionSlotCreateRequiredDLCs.tanks"><img src="/img/dlc-icons/tanks.png" width="16px" alt="Tanks" /> {{ $t('mission.requiredDLCs.tanks') }}</b-form-checkbox>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col">
+              <b-form-checkbox v-model="missionSlotCreateRequiredDLCs.vn"><img src="/img/dlc-icons/vn.png" width="16px" alt="S.O.G. Prairie Fire" /> {{ $t('mission.requiredDLCs.vn') }}</b-form-checkbox>
+            </div>
+            <div class="col">
+              <b-form-checkbox v-model="missionSlotCreateRequiredDLCs.spe"><img src="/img/dlc-icons/spe.png" width="16px" alt="Spearhead 1944" /> {{ $t('mission.requiredDLCs.spe') }}</b-form-checkbox>
+            </div>
+            <div class="col">
+              <b-form-checkbox v-model="missionSlotCreateRequiredDLCs.ws"><img src="/img/dlc-icons/ws.png" width="16px" alt="Western Sahara" /> {{ $t('mission.requiredDLCs.ws') }}</b-form-checkbox>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col">
+              <b-form-checkbox v-model="missionSlotCreateRequiredDLCs.ef"><img src="/img/dlc-icons/ef.png" width="16px" alt="Expeditionary Forces" /> {{ $t('mission.requiredDLCs.ef') }}</b-form-checkbox>
+            </div>
+            <div class="col">
+              <b-form-checkbox v-model="missionSlotCreateRequiredDLCs.rf"><img src="/img/dlc-icons/rf.png" width="16px" alt="Reaction Forces" /> {{ $t('mission.requiredDLCs.rf') }}</b-form-checkbox>
             </div>
             <div class="col">
             </div>
